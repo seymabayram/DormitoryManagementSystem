@@ -54,14 +54,25 @@ namespace DormitoryManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateGlobalSettings(SettingsViewModel model)
         {
+            // Clear validation errors from sub-models not relevant to this form
+            ModelState.Remove("ProfileSettings.CurrentPassword");
+            ModelState.Remove("ProfileSettings.NewPassword");
+            ModelState.Remove("ProfileSettings.ConfirmPassword");
+
+            if (!ModelState.IsValid)
+            {
+                TempData["Error"] = "Please fill in all required fields correctly.";
+                return RedirectToAction(nameof(Index));
+            }
+
             var keys = new Dictionary<string, string>
             {
-                { "DormitoryName", model.GlobalSettings.DormitoryName },
-                { "DormitoryAddress", model.GlobalSettings.DormitoryAddress },
-                { "ContactPhone", model.GlobalSettings.ContactPhone },
-                { "ContactEmail", model.GlobalSettings.ContactEmail },
+                { "DormitoryName",   model.GlobalSettings.DormitoryName   ?? string.Empty },
+                { "DormitoryAddress",model.GlobalSettings.DormitoryAddress ?? string.Empty },
+                { "ContactPhone",    model.GlobalSettings.ContactPhone     ?? string.Empty },
+                { "ContactEmail",    model.GlobalSettings.ContactEmail     ?? string.Empty },
                 { "DefaultMonthlyDue", model.GlobalSettings.DefaultMonthlyDue.ToString() },
-                { "LatePenaltyFee", model.GlobalSettings.LatePenaltyFee.ToString() }
+                { "LatePenaltyFee",    model.GlobalSettings.LatePenaltyFee.ToString()    }
             };
 
             foreach (var kvp in keys)
