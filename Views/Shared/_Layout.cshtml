@@ -82,10 +82,19 @@
         .content-area {
             width: calc(100% - 260px);
             margin-left: 260px;
-            min-height: 100vh;
             padding: 40px;
             position: relative;
             z-index: 2;
+        }
+
+        .page-wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main[role="main"] {
+            flex-grow: 1;
         }
 
         .page-transition { animation: fadeInDown 0.6s cubic-bezier(0.25, 0.8, 0.25, 1); }
@@ -117,7 +126,7 @@
         .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
 
         footer { 
-            margin-top: 50px; 
+            margin-top: auto;  /* Flex Container içerisinde her zaman en alta iter */
             background: rgba(255,255,255,0.05); 
             backdrop-filter: blur(10px); 
             color: #64748b; 
@@ -133,7 +142,7 @@
     {
         <div class="sidebar">
             <a class="sidebar-brand" href="javascript:void(0);" style="cursor: default;">
-                <img src="~/assets/Dorm_logo.png" style="height: 35px; margin-right: 8px; vertical-align: middle;" alt="Logo" /> Dormitory
+                <img src="~/assets/image.png" style="height: 55px; margin-right: 12px; vertical-align: middle;" alt="Logo" /> Dormitory
             </a>
             
             <ul class="p-0 flex-grow-1">
@@ -173,7 +182,7 @@
         </div>
     }
 
-    <div class="@(User.Identity?.IsAuthenticated == true ? "content-area" : "container-fluid") page-transition" style="@(User.Identity?.IsAuthenticated != true ? "padding-top: 80px;" : "")">
+    <div class="@(User.Identity?.IsAuthenticated == true ? "content-area" : "container-fluid") page-transition page-wrapper" style="@(User.Identity?.IsAuthenticated != true ? "padding-top: 80px;" : "")">
         <main role="main" class="pb-5" data-aos="fade-in" data-aos-duration="800">
             @if (TempData["Success"] != null)
             {
@@ -197,8 +206,8 @@
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-md-6 text-md-start mb-3 mb-md-0 d-flex align-items-center justify-content-center justify-content-md-start">
-                        <img src="~/assets/Dorm_logo.png" alt="Logo" style="height: 28px; margin-right: 10px;" />
-                        <span class="fs-5 fw-bold" style="background: linear-gradient(45deg, #1cb5e0, #000046); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Dormitory Premium</span> <span class="ms-1">&copy; @DateTime.Now.Year</span>
+                        <img src="~/assets/image.png" alt="Logo" style="height: 40px; margin-right: 10px;" />
+                        <span class="fs-5 fw-bold" style="background: linear-gradient(45deg, #1cb5e0, #000046); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Dormitory Management System</span> <span class="ms-1">&copy; @DateTime.Now.Year</span>
                     </div>
                     <div class="col-md-6 text-md-end">
                         <a href="#" class="text-decoration-none text-secondary mx-2 hover-text-primary"><i class="bi bi-shield-check"></i> Privacy Policy</a>
