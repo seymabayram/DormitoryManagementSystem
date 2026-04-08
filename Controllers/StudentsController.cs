@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DormitoryManagementSystem.Data;
 using DormitoryManagementSystem.Models;
+using System.Security.Claims;
 
 namespace DormitoryManagementSystem.Controllers
 {
-    [Authorize(Roles = "Admin,Staff")]
+    [Authorize(Roles = "Admin,Staff,Student")]
     public class StudentsController : Controller
     {
         private readonly AppDbContext _context;
@@ -18,10 +19,19 @@ namespace DormitoryManagementSystem.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var students = await _context.Students.Include(s => s.Room).ToListAsync();
-            return View(students);
+            var query = _context.Students.Include(s => s.Room).AsQueryable();
+            if (User.IsInRole("Student"))
+            {
+                var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (int.TryParse(userIdStr, out int userId))
+                {
+                    query = query.Where(s => s.UserId == userId);
+                }
+            }
+            return View(await query.ToListAsync());
         }
 
+        [Authorize(Roles = "Admin,Staff")]
         public IActionResult Create()
         {
             ViewBag.Rooms = _context.Rooms.ToList();
@@ -29,6 +39,7 @@ namespace DormitoryManagementSystem.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Staff")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Surname,NationalId,Email,PhoneNumber,RoomId,MembStartDate,MembEndDate")] Student student)
         {
@@ -101,6 +112,7 @@ namespace DormitoryManagementSystem.Controllers
             return View(student);
         }
 
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -111,6 +123,7 @@ namespace DormitoryManagementSystem.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Staff")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Surname,NationalId,Email,PhoneNumber,RoomId,MembStartDate,MembEndDate,UserId")] Student student)
         {
@@ -157,6 +170,7 @@ namespace DormitoryManagementSystem.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -167,6 +181,30 @@ namespace DormitoryManagementSystem.Controllers
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction(nameof(Index));
+        }
+
+        [Authorize(Roles = "Admin,Staff,Student")]
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var student = await _context.Students
+                .Include(s => s.Room)
+                .Include(s => s.User)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (student == null) return NotFound();
+
+            if (User.IsInRole("Student"))
+            {
+                var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (int.TryParse(userIdStr, out int userId) && student.UserId != userId)
+                {
+                    return Forbid();
+                }
+            }
+
+            return View(student);
         }
 
         private bool StudentExists(int id)

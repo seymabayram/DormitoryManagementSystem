@@ -1,0 +1,78 @@
+@model DormitoryManagementSystem.Models.Student
+@{
+    ViewData["Title"] = "Student Profile";
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="btn btn-light rounded-pill px-4 shadow-sm fw-bold">
+        <i class="bi bi-arrow-left"></i> Back to Roster
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-4 mb-4">
+        <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+            <div class="card-body text-center p-5">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3 shadow" style="width: 100px; height: 100px; font-weight: 800; font-size: 2.5rem;">
+                    @(string.IsNullOrEmpty(Model.Name) ? "?" : Model.Name.Substring(0, 1).ToUpper())
+                </div>
+                <h4 class="fw-bolder mb-1">@Model.Name @Model.Surname</h4>
+                <p class="text-muted mb-3">&#64;@(Model.User?.Username ?? "No Parent Account")</p>
+                
+                @if(DateTime.Now <= Model.MembEndDate) {
+                    <span class="badge bg-success rounded-pill px-4 py-2 fs-6 mb-3">Active Member</span>
+                } else {
+                    <span class="badge bg-secondary rounded-pill px-4 py-2 fs-6 mb-3">Expired</span>
+                }
+
+                <div class="mt-4 pt-4 border-top text-start">
+                    <p class="text-secondary small fw-bold text-uppercase mb-1">System User ID</p>
+                    <p class="mb-3 font-monospace">@Model.UserId</p>
+                    
+                    <p class="text-secondary small fw-bold text-uppercase mb-1">Registration Date</p>
+                    <p class="mb-0"><i class="bi bi-clock-history"></i> @Model.MembStartDate.ToString("dd MMMM yyyy")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8 mb-4">
+        <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+            <div class="card-header bg-white border-0 pt-4 pb-0 px-4">
+                <h5 class="fw-bolder" style="color: #000046;">Personal Information</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="text-muted small fw-bold text-uppercase mb-1">TC Identity Number</label>
+                        <div class="form-control bg-light border-0">@Model.NationalId</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small fw-bold text-uppercase mb-1">Phone Number</label>
+                        <div class="form-control bg-light border-0">@Model.PhoneNumber</div>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="text-muted small fw-bold text-uppercase mb-1">Email Address</label>
+                        <div class="form-control bg-light border-0">@Model.Email</div>
+                    </div>
+                </div>
+
+                <h5 class="fw-bolder mt-5 mb-3" style="color: #000046;">Accommodation Details</h5>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="text-muted small fw-bold text-uppercase mb-1">Assigned Room</label>
+                        <div class="form-control bg-light border-0 fw-bold text-primary">
+                            <i class="bi bi-door-open-fill"></i> @(Model.Room?.RoomNumber ?? "Not Assigned")
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small fw-bold text-uppercase mb-1">Contract End Date</label>
+                        <div class="form-control bg-light border-0">
+                            <i class="bi bi-calendar-event text-danger"></i> @Model.MembEndDate.ToString("dd MMMM yyyy")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

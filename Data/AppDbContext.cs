@@ -14,6 +14,8 @@ namespace DormitoryManagementSystem.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<Student> Students { get; set; }
+        public DbSet<Admin> Admins { get; set; }
+        public DbSet<Staff> Staffs { get; set; }
         public DbSet<DuesAndPenalty> DuesAndPenalties { get; set; }
         public DbSet<MaintenanceTicket> MaintenanceTickets { get; set; }
         public DbSet<Document> Documents { get; set; }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -135,6 +136,30 @@ namespace DormitoryManagementSystem.Controllers
                 IsActive = true
             };
             _context.Users.Add(newUser);
+            await _context.SaveChangesAsync();
+
+            if (model.SelectedRole == "Admin")
+            {
+                var newAdmin = new Admin
+                {
+                    UserId = newUser.Id,
+                    Name = model.Name,
+                    Surname = model.Surname,
+                    Email = model.Email
+                };
+                _context.Admins.Add(newAdmin);
+            }
+            else if (model.SelectedRole == "Staff")
+            {
+                var newStaff = new Staff
+                {
+                    UserId = newUser.Id,
+                    Name = model.Name,
+                    Surname = model.Surname,
+                    Email = model.Email
+                };
+                _context.Staffs.Add(newStaff);
+            }
             await _context.SaveChangesAsync();
 
             TempData["Success"] = $"Account created successfully! You can now log in as {model.SelectedRole}.";

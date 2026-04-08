@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using DormitoryManagementSystem.Models;
 
 namespace DormitoryManagementSystem.Data
@@ -6,8 +7,7 @@ namespace DormitoryManagementSystem.Data
     {
         public static void Seed(AppDbContext context)
         {
-            // Veritabanının oluşturulduğundan emin ol
-            // Recreate database with new schema (Name, Surname, NationalId, Email columns)
+            // Uygulamayı her açtığımızda veritabanını yeni modellerle baştan yaratır
             context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
 

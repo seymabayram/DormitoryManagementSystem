@@ -109,15 +109,15 @@
                 <li class="nav-item">
                     <a class="nav-link" asp-controller="Home" asp-action="Index"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
                 </li>
-                @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+                @if (User.IsInRole("Admin"))
                 {
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Rooms" asp-action="Index"><i class="bi bi-door-open-fill"></i> Rooms</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Students" asp-action="Index"><i class="bi bi-person-badge-fill"></i> Students</a>
-                    </li>
                 }
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Students" asp-action="Index"><i class="bi bi-person-badge-fill"></i> @(User.IsInRole("Student") ? "My Profile" : "Students")</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" asp-controller="Dues" asp-action="Index"><i class="bi bi-wallet-fill"></i> Finances</a>
                 </li>
