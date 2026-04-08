@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using DormitoryManagementSystem.Models;
 using DormitoryManagementSystem.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DormitoryManagementSystem.Controllers;
 
