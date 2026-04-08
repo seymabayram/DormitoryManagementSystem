@@ -1,0 +1,85 @@
+@model DormitoryManagementSystem.Models.MaintenanceTicket
+@{
+    ViewData["Title"] = "Create Maintenance Ticket";
+    var students = (IEnumerable<DormitoryManagementSystem.Models.Student>)ViewBag.Students;
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="text-center mb-4">
+            <h2 class="fw-bolder text-danger">Report an Issue</h2>
+            <p class="text-muted">Is something broken? Let technical staff know instantly.</p>
+        </div>
+
+        <div class="card border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="card-body p-5">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    @if (!User.IsInRole("Student"))
+                    {
+                        <!-- Admin/Staff: Student search with TC disambiguation -->
+                        <div class="form-group mb-4">
+                            <label class="form-label fw-bold text-secondary">Reporting Student</label>
+                            <input list="studentListMaintenance"
+                                   id="maintenanceStudentInput"
+                                   class="form-control form-control-lg bg-light border-0"
+                                   placeholder="Type name or TC to search..."
+                                   autocomplete="off" />
+                            <datalist id="studentListMaintenance">
+                                @foreach (var s in students)
+                                {
+                                    <option value="@s.FullNameWithTC" data-id="@s.Id" data-room="@s.RoomId">@s.FullNameWithTC</option>
+                                }
+                            </datalist>
+                            <input type="hidden" asp-for="StudentId" id="maintenanceStudentIdHidden" />
+                            <input type="hidden" asp-for="RoomId" id="maintenanceRoomIdHidden" />
+                            <small class="text-muted">If two students share the same name, use the TC number to select the correct one.</small>
+                        </div>
+
+                        <!-- Room selector (also auto-filled when student selected) -->
+                        <div class="form-group mb-4">
+                            <label asp-for="RoomId" class="form-label fw-bold text-secondary">Target Room</label>
+                            <select asp-for="RoomId" id="roomSelect" class="form-select form-select-lg bg-light border-0" asp-items="@(new SelectList(ViewBag.Rooms, "Id", "RoomNumber"))">
+                                <option value="" disabled selected>-- Select Room (auto-filled from student) --</option>
+                            </select>
+                        </div>
+                    }
+
+                    <div class="form-group mb-4">
+                        <label asp-for="Issue" class="form-label fw-bold text-danger">Issue Description</label>
+                        <textarea asp-for="Issue" class="form-control form-control-lg bg-light border-0" rows="5" placeholder="Explain the problem in detail..."></textarea>
+                        <span asp-validation-for="Issue" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-5 border-top pt-4">
+                        <a asp-action="Index" class="btn btn-light rounded-pill px-4 text-muted">Go Back</a>
+                        <button type="submit" class="btn btn-danger rounded-pill px-5 shadow-sm fw-bold"><i class="bi bi-send-fill"></i> Send Report</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var studentInput = document.getElementById('maintenanceStudentInput');
+    if (studentInput) {
+        studentInput.addEventListener('input', function () {
+            var val = this.value;
+            var options = document.getElementById('studentListMaintenance').options;
+            for (var i = 0; i < options.length; i++) {
+                if (options[i].value === val) {
+                    document.getElementById('maintenanceStudentIdHidden').value = options[i].getAttribute('data-id');
+                    // Auto-fill room
+                    var roomId = options[i].getAttribute('data-room');
+                    var roomSelect = document.getElementById('roomSelect');
+                    if (roomSelect && roomId) roomSelect.value = roomId;
+                    document.getElementById('maintenanceRoomIdHidden').value = roomId;
+                    return;
+                }
+            }
+            document.getElementById('maintenanceStudentIdHidden').value = '';
+        });
+    }
+</script>

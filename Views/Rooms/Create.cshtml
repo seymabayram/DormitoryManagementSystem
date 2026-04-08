@@ -1,0 +1,38 @@
+@model DormitoryManagementSystem.Models.Room
+@{
+    ViewData["Title"] = "Add New Room";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="text-center mb-4">
+            <h2 class="fw-bolder" style="color: #2c3e50;">Add New Room</h2>
+            <p class="text-muted">Configure a new room and set its capacity.</p>
+        </div>
+        
+        <div class="card border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="card-body p-5">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    
+                    <div class="form-group mb-4">
+                        <label asp-for="RoomNumber" class="form-label fw-bold text-secondary">Room Identifier</label>
+                        <input asp-for="RoomNumber" class="form-control form-control-lg bg-light border-0" placeholder="e.g. 101, A-1" />
+                        <span asp-validation-for="RoomNumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label asp-for="Capacity" class="form-label fw-bold text-secondary">Maximum Bed Capacity</label>
+                        <input asp-for="Capacity" class="form-control form-control-lg bg-light border-0" type="number" min="1" max="10" placeholder="4" />
+                        <span asp-validation-for="Capacity" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-5">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-sm">Save Room</button>
+                        <a asp-action="Index" class="btn btn-light btn-lg rounded-pill text-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,193 @@
+@model DormitoryManagementSystem.Models.RegisterViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Create Account";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Dormitory System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        * { font-family: 'Outfit', sans-serif; }
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 0;
+        }
+        .register-card {
+            background: rgba(255,255,255,0.97);
+            border-radius: 24px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+            overflow: hidden;
+            width: 520px;
+            max-width: 95vw;
+        }
+        .register-header {
+            background: linear-gradient(135deg, #1cb5e0, #000046);
+            padding: 32px 30px 24px;
+            text-align: center;
+            color: white;
+        }
+        .register-header i { font-size: 2.8rem; display: block; margin-bottom: 8px; }
+        .register-header h3 { font-weight: 800; margin: 0; font-size: 1.5rem; }
+        .register-header p { opacity: 0.75; margin: 4px 0 0; font-size: 0.88rem; }
+
+        .role-tabs { display: flex; background: #f1f5f9; border-radius: 14px; padding: 5px; margin-bottom: 24px; }
+        .role-tab {
+            flex: 1; padding: 10px 5px; border: none; background: transparent;
+            border-radius: 10px; font-weight: 600; font-size: 0.8rem;
+            color: #6c7a89; cursor: pointer; transition: all 0.3s;
+            display: flex; flex-direction: column; align-items: center; gap: 3px;
+        }
+        .role-tab i { font-size: 1.2rem; }
+        .role-tab.active { background: white; color: #000046; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+        .form-control {
+            border-radius: 12px; padding: 11px 15px;
+            border: 1.5px solid #e8ecf0; transition: all 0.3s;
+        }
+        .form-control:focus { border-color: #1cb5e0; box-shadow: 0 0 0 4px rgba(28,181,224,0.15); }
+        .input-group-text {
+            background: #f8fafc; border: 1.5px solid #e8ecf0; border-right: none;
+            border-radius: 12px 0 0 12px;
+        }
+        .input-group .form-control { border-left: none; border-radius: 0 12px 12px 0; }
+        .btn-register {
+            background: linear-gradient(45deg, #1cb5e0, #000046);
+            border: none; border-radius: 12px; padding: 13px;
+            font-weight: 700; font-size: 1rem; transition: all 0.3s;
+        }
+        .btn-register:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(28,181,224,0.4); }
+    </style>
+</head>
+<body>
+    <div class="register-card">
+        <div class="register-header">
+            <i class="bi bi-person-plus-fill"></i>
+            <h3>Create Account</h3>
+            <p>Join the Dormitory Management System</p>
+        </div>
+        <div class="p-4 p-md-5">
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger rounded-3 py-2 small mb-4">@TempData["Error"]</div>
+            }
+
+            <form asp-action="Register" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small fw-bold rounded-3 mb-4"></div>
+
+                <!-- Role Tabs -->
+                <input type="hidden" asp-for="SelectedRole" id="selectedRoleInput" />
+                <div class="role-tabs mb-4">
+                    <button type="button" class="role-tab active" data-role="Admin" onclick="selectRole(this,'Admin')">
+                        <i class="bi bi-shield-fill-check"></i> Admin
+                    </button>
+                    <button type="button" class="role-tab" data-role="Staff" onclick="selectRole(this,'Staff')">
+                        <i class="bi bi-person-badge-fill"></i> Staff
+                    </button>
+                    <button type="button" class="role-tab" data-role="Student" onclick="selectRole(this,'Student')">
+                        <i class="bi bi-mortarboard-fill"></i> Student
+                    </button>
+                </div>
+
+                <!-- Name + Surname -->
+                <div class="row g-3 mb-3">
+                    <div class="col-6">
+                        <label asp-for="Name" class="form-label fw-bold text-secondary small text-uppercase"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person text-primary"></i></span>
+                            <input asp-for="Name" class="form-control" placeholder="First name" />
+                        </div>
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+                    <div class="col-6">
+                        <label asp-for="Surname" class="form-label fw-bold text-secondary small text-uppercase"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person text-primary"></i></span>
+                            <input asp-for="Surname" class="form-control" placeholder="Last name" />
+                        </div>
+                        <span asp-validation-for="Surname" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <!-- Username -->
+                <div class="form-group mb-3">
+                    <label asp-for="Username" class="form-label fw-bold text-secondary small text-uppercase"></label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-at text-primary"></i></span>
+                        <input asp-for="Username" class="form-control" placeholder="Choose a username" />
+                    </div>
+                    <span asp-validation-for="Username" class="text-danger small"></span>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group mb-3">
+                    <label asp-for="Email" class="form-label fw-bold text-secondary small text-uppercase"></label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-envelope text-primary"></i></span>
+                        <input asp-for="Email" class="form-control" placeholder="you@example.com" />
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <!-- Password -->
+                <div class="row g-3 mb-4">
+                    <div class="col-6">
+                        <label asp-for="Password" class="form-label fw-bold text-secondary small text-uppercase"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock text-primary"></i></span>
+                            <input asp-for="Password" class="form-control" placeholder="Password" />
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+                    <div class="col-6">
+                        <label asp-for="ConfirmPassword" class="form-label fw-bold text-secondary small text-uppercase"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock-fill text-primary"></i></span>
+                            <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm" />
+                        </div>
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-register text-white">
+                        <i class="bi bi-person-check-fill me-2"></i>Create Account
+                    </button>
+                </div>
+
+                <div class="text-center mt-4">
+                    <span class="text-muted small">Already have an account? </span>
+                    <a asp-controller="Account" asp-action="Login" class="fw-bold text-decoration-none" style="color: #1cb5e0;">Log in.</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function selectRole(btn, role) {
+            document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('selectedRoleInput').value = role;
+        }
+        window.addEventListener('DOMContentLoaded', function () {
+            var role = document.getElementById('selectedRoleInput').value || 'Admin';
+            var tab = document.querySelector('[data-role="' + role + '"]');
+            if (tab) selectRole(tab, role);
+        });
+    </script>
+</body>
+</html>

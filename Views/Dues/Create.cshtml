@@ -1,0 +1,81 @@
+@model DormitoryManagementSystem.Models.DuesAndPenalty
+@{
+    ViewData["Title"] = "Create Due/Penalty";
+    var students = (IEnumerable<DormitoryManagementSystem.Models.Student>)ViewBag.Students;
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="text-center mb-4">
+            <h2 class="fw-bolder" style="color: #2c3e50;">Invoice Issue</h2>
+            <p class="text-muted">Generate a new monthly due or penalize a rule violation.</p>
+        </div>
+
+        <div class="card border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="card-body p-5">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <!-- Student search with TC disambiguation -->
+                    <div class="form-group mb-4">
+                        <label class="form-label fw-bold text-secondary">Target Student</label>
+                        <input list="studentListDues" 
+                               id="studentSearchInput" 
+                               class="form-control form-control-lg bg-light border-0" 
+                               placeholder="Type name or TC to search..." 
+                               autocomplete="off" />
+                        <datalist id="studentListDues">
+                            @foreach (var s in students)
+                            {
+                                <option value="@s.FullNameWithTC" data-id="@s.Id">@s.FullNameWithTC</option>
+                            }
+                        </datalist>
+                        <input type="hidden" asp-for="StudentId" id="studentIdHidden" />
+                        <small class="text-muted">If two students share the same name, use the TC number to identify the correct one.</small>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group mb-4">
+                            <label asp-for="Amount" class="form-label fw-bold text-secondary">Amount (₺)</label>
+                            <div class="input-group input-group-lg shadow-sm" style="border-radius: 10px; overflow: hidden;">
+                                <span class="input-group-text border-0 bg-warning text-dark fw-bold">₺</span>
+                                <input asp-for="Amount" type="number" step="0.01" class="form-control bg-light border-0" />
+                            </div>
+                            <span asp-validation-for="Amount" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 form-group mb-4">
+                            <label asp-for="DueDate" class="form-label fw-bold text-secondary">Deadline Date</label>
+                            <input asp-for="DueDate" type="date" class="form-control form-control-lg bg-light border-0" />
+                            <span asp-validation-for="DueDate" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label asp-for="Description" class="form-label fw-bold text-secondary">Reason / Note</label>
+                        <textarea asp-for="Description" class="form-control bg-light border-0" rows="3" placeholder="Explain the reason for this penalty or due..."></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-5">
+                        <a asp-action="Index" class="btn btn-light rounded-pill px-4 text-muted">Cancel</a>
+                        <button type="submit" class="btn btn-warning rounded-pill px-5 shadow-sm fw-bold">Generate Invoice</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('studentSearchInput').addEventListener('input', function () {
+        var val = this.value;
+        var options = document.getElementById('studentListDues').options;
+        var found = '';
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].value === val) {
+                found = options[i].getAttribute('data-id');
+                break;
+            }
+        }
+        document.getElementById('studentIdHidden').value = found;
+    });
+</script>

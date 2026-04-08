@@ -1,0 +1,57 @@
+@model IEnumerable<DormitoryManagementSystem.Models.DuesAndPenalty>
+@{
+    ViewData["Title"] = "Finances & Dues";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bolder" style="color: #2c3e50;">Financial Tracking</h2>
+    @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+    {
+        <a asp-action="Create" class="btn btn-warning text-dark fw-bold rounded-pill px-4 shadow-sm">+ Add Due/Penalty</a>
+    }
+</div>
+
+<div class="card border-0 shadow-sm" style="border-radius: 16px; overflow: hidden;">
+    <div class="card-body p-0">
+        <table class="table table-hover align-middle mb-0">
+            <thead style="background: #fff8e1;">
+                <tr>
+                    <th class="ps-4 py-3">Student Name</th>
+                    <th class="py-3">Amount</th>
+                    <th class="py-3">Due Date</th>
+                    <th class="py-3">Status</th>
+                    <th class="text-end pe-4 py-3">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="ps-4 fw-bold">
+                            @(item.Student?.FullName ?? "Unknown")
+                        </td>
+                        <td class="fw-bold">
+                            <span class="@(item.IsPaid ? "text-success" : "text-danger")">₺@item.Amount.ToString("N2")</span>
+                        </td>
+                        <td><small class="text-muted">@item.DueDate.ToString("dd MMM yyyy")</small></td>
+                        <td>
+                            @if(item.IsPaid) {
+                                <div class="text-success fw-bold"><span class="badge bg-success bg-opacity-25 text-success rounded-pill px-3 py-2">Paid</span></div>
+                            } else {
+                                <div class="text-danger fw-bold"><span class="badge bg-danger bg-opacity-25 text-danger rounded-pill px-3 py-2">Unpaid</span></div>
+                            }
+                        </td>
+                        <td class="text-end pe-4">
+                            @if (!item.IsPaid && (User.IsInRole("Admin") || User.IsInRole("Staff")))
+                            {
+                                <form asp-action="MarkAsPaid" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold">Mark Paid</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
