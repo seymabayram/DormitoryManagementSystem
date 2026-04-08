@@ -175,70 +175,7 @@
             </p>
         </div>
 
-        @if (User.Identity?.IsAuthenticated == true)
-        {
-            <div class="kpi-row">
-                @if (User.IsInRole("Student"))
-                {
-                    <div class="glass-card kpi-card border-blue" style="grid-column: span 2;">
-                        <div class="card-label">Identity</div>
-                        <h2 class="card-value text-blue">@ViewBag.StudentName</h2>
-                        <div class="card-sub">Active Resident Gateway</div>
-                    </div>
-                    <div class="glass-card kpi-card border-amber">
-                        <div class="card-label">Room Allocation</div>
-                        <div class="card-value text-amber">@ViewBag.RoomNumber</div>
-                        <div class="card-sub">Assigned Enclave</div>
-                    </div>
-                }
-                else
-                {
-                    <div class="glass-card kpi-card border-blue">
-                        <div class="card-label">Live Occupancy</div>
-                        <div class="card-value text-blue">@ViewBag.TotalStudents</div>
-                        <div class="card-sub">of @ViewBag.TotalCapacity Total Beds</div>
-                    </div>
-                    <div class="glass-card kpi-card border-green">
-                        <div class="card-label">Collected Revenue</div>
-                        <div class="card-value text-green">₺@ViewBag.TotalPaid</div>
-                        <div class="card-sub">Monthly Collections</div>
-                    </div>
-                    <div class="glass-card kpi-card border-red">
-                        <div class="card-label">Total Arrears</div>
-                        <div class="card-value text-red">₺@ViewBag.TotalUnpaid</div>
-                        <div class="card-sub">Outstanding Ledger</div>
-                    </div>
-                    <div class="glass-card kpi-card border-amber">
-                        <div class="card-label">Active Tickets</div>
-                        <div class="card-value text-amber">@ViewBag.PendingTickets</div>
-                        <div class="card-sub">Service Queue</div>
-                    </div>
-                }
-            </div>
-
-            @if (!User.IsInRole("Student"))
-            {
-                <div class="row g-5 mt-4 mb-5">
-                    <div class="col-lg-7">
-                        <div class="card glass-card p-5 border-0 h-100">
-                            <h5 class="fw-bold mb-4 gradient-text">Analytic Insights</h5>
-                            <div style="height: 350px;">
-                                <canvas id="financeChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-5">
-                        <div class="card glass-card p-5 border-0 h-100">
-                            <h5 class="fw-bold mb-4 gradient-text">Maintenance Pulse</h5>
-                            <div style="height: 350px;">
-                                <canvas id="maintenanceChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-        }
-        else
+        @if (User.Identity?.IsAuthenticated != true)
         {
             <div class="mt-4 pb-5">
                 <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg rounded-pill px-5 py-3 fs-5 shadow-lg border-0" 
@@ -247,11 +184,19 @@
                 </a>
             </div>
         }
+        else
+        {
+            <div class="mt-4 pb-5">
+                <a asp-controller="Home" asp-action="Dashboard" class="btn btn-success btn-lg rounded-pill px-5 py-3 fs-5 shadow-lg border-0" 
+                   style="background: linear-gradient(45deg, #2e7d32, #43a047); box-shadow: 0 10px 40px rgba(46,125,50,0.4) !important;">
+                    Go to Dashboard
+                </a>
+            </div>
+        }
     </div>
 </div>
 
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Star Field Engine
         const canvas = document.getElementById('starCanvas');
@@ -289,55 +234,5 @@
         window.addEventListener('resize', initStars);
         initStars();
         animateStars();
-
-        @if (User.Identity?.IsAuthenticated == true && !User.IsInRole("Student"))
-        {
-            <text>
-            const ctxFinance = document.getElementById('financeChart').getContext('2d');
-            new Chart(ctxFinance, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Paid', 'Overdue'],
-                    datasets: [{
-                        data: [@ViewBag.TotalPaid, @ViewBag.TotalUnpaid],
-                        backgroundColor: ['#81c784', '#ff8a80'],
-                        borderColor: 'transparent',
-                        hoverOffset: 30
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { position: 'right', labels: { color: '#cfd8dc', padding: 20, font: { family: 'Outfit', size: 14 } } } 
-                    },
-                    cutout: '84%'
-                }
-            });
-
-            const ctxMaint = document.getElementById('maintenanceChart').getContext('2d');
-            new Chart(ctxMaint, {
-                type: 'bar',
-                data: {
-                    labels: ['Pending', 'Resolved'],
-                    datasets: [{
-                        data: [@ViewBag.PendingTickets, @ViewBag.ResolvedTickets],
-                        backgroundColor: ['#ffca28', '#4fc3f7'],
-                        borderRadius: 12,
-                        barThickness: 55
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#90a4ae' } },
-                        x: { grid: { display: false }, ticks: { color: '#90a4ae' } }
-                    },
-                    plugins: { legend: { display: false } }
-                }
-            });
-            </text>
-        }
     </script>
 }

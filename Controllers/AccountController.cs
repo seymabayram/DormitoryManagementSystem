@@ -23,7 +23,7 @@ namespace DormitoryManagementSystem.Controllers
         public IActionResult Login()
         {
             if (User.Identity?.IsAuthenticated == true)
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Dashboard", "Home");
             return View(new LoginViewModel());
         }
 
@@ -92,7 +92,7 @@ namespace DormitoryManagementSystem.Controllers
                     new ClaimsPrincipal(claimsIdentity),
                     new AuthenticationProperties { IsPersistent = model.RememberMe });
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Dashboard", "Home");
             }
 
             ModelState.AddModelError(string.Empty, "Invalid credentials. Please check your information and try again.");

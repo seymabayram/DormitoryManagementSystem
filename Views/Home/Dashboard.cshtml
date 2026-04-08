@@ -1,0 +1,190 @@
+@{
+    ViewData["Title"] = "Executive Dashboard";
+}
+
+<style>
+    /* Premium Interactive Design System */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.4);
+        transition: all 0.3s ease;
+        color: #fff;
+    }
+    
+    .gradient-text {
+        background: linear-gradient(135deg, #fff 0%, #4fc3f7 50%, #81c784 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 800;
+        letter-spacing: -1.5px;
+    }
+
+    /* Balanced Vertical Layout */
+    .dashboard-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding-top: 1rem;
+        padding-bottom: 5rem;
+        min-height: 85vh;
+        position: relative;
+    }
+
+    /* KPI Row */
+    .kpi-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 24px;
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .kpi-card {
+        padding: 28px;
+        border-bottom: 5px solid transparent;
+        color: #fff;
+    }
+    .kpi-card .card-label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; letter-spacing: 2px; margin-bottom: 12px; }
+    .kpi-card .card-value { font-size: 2.5rem; font-weight: 800; line-height: 1; margin-bottom: 10px; }
+    
+    .border-blue { border-bottom-color: #2196f3; }
+    .border-green { border-bottom-color: #4caf50; }
+    .border-red { border-bottom-color: #f44336; }
+    .border-amber { border-bottom-color: #ffc107; }
+
+    .text-blue { color: #4fc3f7; }
+    .text-green { color: #81c784; }
+    .text-red { color: #ff8a80; }
+    .text-amber { color: #ffd54f; }
+</style>
+
+<div class="container-fluid px-4">
+    <div class="dashboard-container animate__animated animate__fadeIn">
+        
+        <div class="w-100 text-start mb-4">
+            <h1 class="display-5 gradient-text mb-0">System Overview</h1>
+            <p class="text-muted">Real-time dormitory metrics and analytics.</p>
+        </div>
+
+        <div class="kpi-row">
+            @if (User.IsInRole("Student"))
+            {
+                <div class="glass-card kpi-card border-blue" style="grid-column: span 2;">
+                    <div class="card-label">Identity</div>
+                    <h2 class="card-value text-blue">@ViewBag.StudentName</h2>
+                    <div class="card-sub">Active Resident Gateway</div>
+                </div>
+                <div class="glass-card kpi-card border-amber">
+                    <div class="card-label">Room Allocation</div>
+                    <div class="card-value text-amber">@ViewBag.RoomNumber</div>
+                    <div class="card-sub">Assigned Enclave</div>
+                </div>
+            }
+            else
+            {
+                <div class="glass-card kpi-card border-blue">
+                    <div class="card-label">Live Occupancy</div>
+                    <div class="card-value text-blue">@ViewBag.TotalStudents</div>
+                    <div class="card-sub">of @ViewBag.TotalCapacity Total Beds</div>
+                </div>
+                <div class="glass-card kpi-card border-green">
+                    <div class="card-label">Collected Revenue</div>
+                    <div class="card-value text-green">₺@ViewBag.TotalPaid</div>
+                    <div class="card-sub">Monthly Collections</div>
+                </div>
+                <div class="glass-card kpi-card border-red">
+                    <div class="card-label">Total Arrears</div>
+                    <div class="card-value text-red">₺@ViewBag.TotalUnpaid</div>
+                    <div class="card-sub">Outstanding Ledger</div>
+                </div>
+                <div class="glass-card kpi-card border-amber">
+                    <div class="card-label">Active Tickets</div>
+                    <div class="card-value text-amber">@ViewBag.PendingTickets</div>
+                    <div class="card-sub">Service Queue</div>
+                </div>
+            }
+        </div>
+
+        @if (!User.IsInRole("Student"))
+        {
+            <div class="row g-4 mt-4 w-100">
+                <div class="col-lg-7">
+                    <div class="glass-card p-4 border-0 h-100">
+                        <h5 class="fw-bold mb-4 gradient-text">Analytic Insights</h5>
+                        <div style="height: 300px;">
+                            <canvas id="financeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="glass-card p-4 border-0 h-100">
+                        <h5 class="fw-bold mb-4 gradient-text">Maintenance Pulse</h5>
+                        <div style="height: 300px;">
+                            <canvas id="maintenanceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        @if (!User.IsInRole("Student"))
+        {
+            <text>
+            const ctxFinance = document.getElementById('financeChart').getContext('2d');
+            new Chart(ctxFinance, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Paid', 'Overdue'],
+                    datasets: [{
+                        data: [@ViewBag.TotalPaid, @ViewBag.TotalUnpaid],
+                        backgroundColor: ['#81c784', '#ff8a80'],
+                        borderColor: 'transparent',
+                        hoverOffset: 30
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { position: 'right', labels: { color: '#cfd8dc', padding: 20, font: { family: 'Outfit', size: 14 } } } 
+                    },
+                    cutout: '84%'
+                }
+            });
+
+            const ctxMaint = document.getElementById('maintenanceChart').getContext('2d');
+            new Chart(ctxMaint, {
+                type: 'bar',
+                data: {
+                    labels: ['Pending', 'Resolved'],
+                    datasets: [{
+                        data: [@ViewBag.PendingTickets, @ViewBag.ResolvedTickets],
+                        backgroundColor: ['#ffca28', '#4fc3f7'],
+                        borderRadius: 12,
+                        barThickness: 55
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#90a4ae' } },
+                        x: { grid: { display: false }, ticks: { color: '#90a4ae' } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+            </text>
+        }
+    </script>
+}

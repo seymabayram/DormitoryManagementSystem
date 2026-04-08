@@ -138,7 +138,7 @@
             
             <ul class="p-0 flex-grow-1">
                 <li class="nav-item">
-                    <a class="nav-link" asp-controller="Home" asp-action="Index"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+                    <a class="nav-link" asp-controller="Home" asp-action="Dashboard"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
                 </li>
                 @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
                 {
