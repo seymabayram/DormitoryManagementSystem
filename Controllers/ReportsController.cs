@@ -105,104 +105,99 @@ namespace DormitoryManagementSystem.Controllers
         }
 
         // ── EXCEL EXPORT ──
-        public async Task<IActionResult> ExportExcel()
+        public async Task<IActionResult> ExportExcel(string type = "consolidated")
         {
-            var allDues = await _context.DuesAndPenalties!
+            var query = _context.DuesAndPenalties!
                 .Include(d => d.Student)
-                    .ThenInclude(s => s!.Room)
-                .ToListAsync();
+                    .ThenInclude(s => s!.Room);
+
+            var allDues = await query.ToListAsync();
 
             using var workbook = new ClosedXML.Excel.XLWorkbook();
 
-            // Sheet 1: Financial Summary
-            var summarySheet = workbook.Worksheets.Add("Financial Summary");
-            summarySheet.Cell(1, 1).Value = "Dormitory Management System - Financial Report";
-            summarySheet.Cell(1, 1).Style.Font.Bold = true;
-            summarySheet.Cell(1, 1).Style.Font.FontSize = 14;
-            summarySheet.Cell(2, 1).Value = $"Generated: {DateTime.Now:dd/MM/yyyy HH:mm}";
-            summarySheet.Cell(2, 1).Style.Font.Italic = true;
-
-            summarySheet.Cell(4, 1).Value = "Metric";
-            summarySheet.Cell(4, 2).Value = "Value (₺)";
-            summarySheet.Range("A4:B4").Style.Font.Bold = true;
-            summarySheet.Range("A4:B4").Style.Fill.BackgroundColor = ClosedXML.Excel.XLColor.LightBlue;
-
-            var collected = allDues.Where(d => d.IsPaid).Sum(d => d.Amount);
-            var overdue   = allDues.Where(d => !d.IsPaid).Sum(d => d.Amount);
-            var total     = collected + overdue;
-            var rate      = total > 0 ? Math.Round((double)(collected / total) * 100, 2) : 0;
-
-            summarySheet.Cell(5, 1).Value = "Collected Revenue";   summarySheet.Cell(5, 2).Value = (double)collected;
-            summarySheet.Cell(6, 1).Value = "Total Overdue";       summarySheet.Cell(6, 2).Value = (double)overdue;
-            summarySheet.Cell(7, 1).Value = "Total Target";        summarySheet.Cell(7, 2).Value = (double)total;
-            summarySheet.Cell(8, 1).Value = "Collection Rate (%)"; summarySheet.Cell(8, 2).Value = rate;
-            summarySheet.Columns().AdjustToContents();
-
-            // Sheet 2: Overdue Payments
-            var overdueSheet = workbook.Worksheets.Add("Overdue Payments");
-            overdueSheet.Cell(1, 1).Value = "Student Name";
-            overdueSheet.Cell(1, 2).Value = "Room";
-            overdueSheet.Cell(1, 3).Value = "Description";
-            overdueSheet.Cell(1, 4).Value = "Amount (₺)";
-            overdueSheet.Cell(1, 5).Value = "Due Date";
-            overdueSheet.Cell(1, 6).Value = "Days Overdue";
-            overdueSheet.Row(1).Style.Font.Bold = true;
-            overdueSheet.Row(1).Style.Fill.BackgroundColor = ClosedXML.Excel.XLColor.FromHtml("#f8d7da");
-
-            int row = 2;
-            foreach (var d in allDues.Where(x => !x.IsPaid).OrderByDescending(x => x.DueDate))
+            if (type == "overdue")
             {
-                overdueSheet.Cell(row, 1).Value = d.Student?.FullName ?? "Unknown";
-                overdueSheet.Cell(row, 2).Value = d.Student?.Room?.RoomNumber ?? "N/A";
-                overdueSheet.Cell(row, 3).Value = d.Description;
-                overdueSheet.Cell(row, 4).Value = (double)d.Amount;
-                overdueSheet.Cell(row, 5).Value = d.DueDate.ToString("dd/MM/yyyy");
-                overdueSheet.Cell(row, 6).Value = (int)Math.Max(0, (DateTime.Now - d.DueDate).TotalDays);
-                row++;
+                // Sheet: Overdue Details
+                var overdueSheet = workbook.Worksheets.Add("Overdue Details");
+                overdueSheet.Cell(1, 1).Value = "Student Name";
+                overdueSheet.Cell(1, 2).Value = "Room";
+                overdueSheet.Cell(1, 3).Value = "Description";
+                overdueSheet.Cell(1, 4).Value = "Amount (₺)";
+                overdueSheet.Cell(1, 5).Value = "Due Date";
+                overdueSheet.Cell(1, 6).Value = "Days Overdue";
+                overdueSheet.Range("A1:F1").Style.Font.Bold = true;
+                overdueSheet.Range("A1:F1").Style.Fill.BackgroundColor = ClosedXML.Excel.XLColor.FromHtml("#f8d7da");
+
+                int row = 2;
+                foreach (var d in allDues.Where(x => !x.IsPaid).OrderByDescending(x => x.DueDate))
+                {
+                    overdueSheet.Cell(row, 1).Value = d.Student?.FullName ?? "Unknown";
+                    overdueSheet.Cell(row, 2).Value = d.Student?.Room?.RoomNumber ?? "N/A";
+                    overdueSheet.Cell(row, 3).Value = d.Description;
+                    overdueSheet.Cell(row, 4).Value = (double)d.Amount;
+                    overdueSheet.Cell(row, 5).Value = d.DueDate.ToString("dd/MM/yyyy");
+                    overdueSheet.Cell(row, 6).Value = (int)Math.Max(0, (DateTime.Now - d.DueDate).TotalDays);
+                    row++;
+                }
+                overdueSheet.Columns().AdjustToContents();
             }
-            overdueSheet.Columns().AdjustToContents();
-
-            // Sheet 3: All Payments
-            var allSheet = workbook.Worksheets.Add("All Payments");
-            allSheet.Cell(1, 1).Value = "Student Name";
-            allSheet.Cell(1, 2).Value = "Room";
-            allSheet.Cell(1, 3).Value = "Description";
-            allSheet.Cell(1, 4).Value = "Amount (₺)";
-            allSheet.Cell(1, 5).Value = "Due Date";
-            allSheet.Cell(1, 6).Value = "Status";
-            allSheet.Row(1).Style.Font.Bold = true;
-            allSheet.Row(1).Style.Fill.BackgroundColor = ClosedXML.Excel.XLColor.LightGray;
-
-            int allRow = 2;
-            foreach (var d in allDues.OrderBy(x => x.DueDate))
+            else
             {
-                allSheet.Cell(allRow, 1).Value = d.Student?.FullName ?? "Unknown";
-                allSheet.Cell(allRow, 2).Value = d.Student?.Room?.RoomNumber ?? "N/A";
-                allSheet.Cell(allRow, 3).Value = d.Description;
-                allSheet.Cell(allRow, 4).Value = (double)d.Amount;
-                allSheet.Cell(allRow, 5).Value = d.DueDate.ToString("dd/MM/yyyy");
-                allSheet.Cell(allRow, 6).Value = d.IsPaid ? "Paid" : "Unpaid";
-                allSheet.Cell(allRow, 6).Style.Font.FontColor = d.IsPaid
-                    ? ClosedXML.Excel.XLColor.Green
-                    : ClosedXML.Excel.XLColor.Red;
-                allRow++;
+                // Default: Consolidated Summary
+                var summarySheet = workbook.Worksheets.Add("Consolidated Summary");
+                summarySheet.Cell(1, 1).Value = "Dormitory Management System - Consolidated Report";
+                summarySheet.Cell(1, 1).Style.Font.Bold = true;
+                summarySheet.Cell(1, 1).Style.Font.FontSize = 14;
+                summarySheet.Cell(2, 1).Value = $"Report as of: {DateTime.Now:dd/MM/yyyy HH:mm}";
+                summarySheet.Cell(2, 1).Style.Font.Italic = true;
+
+                // Finance Section
+                summarySheet.Cell(4, 1).Value = "FINANCIAL METRICS";
+                summarySheet.Cell(4, 1).Style.Font.Bold = true;
+                summarySheet.Range("A4:B4").Merge().Style.Fill.BackgroundColor = ClosedXML.Excel.XLColor.LightGray;
+
+                var collected = allDues.Where(d => d.IsPaid).Sum(d => d.Amount);
+                var overdueDues = allDues.Where(d => !d.IsPaid).Sum(d => d.Amount);
+                var totalTarget = collected + overdueDues;
+                var rate = totalTarget > 0 ? Math.Round((double)(collected / totalTarget) * 100, 2) : 0;
+
+                summarySheet.Cell(5, 1).Value = "Collected Revenue";   summarySheet.Cell(5, 2).Value = (double)collected;
+                summarySheet.Cell(6, 1).Value = "Total Overdue";       summarySheet.Cell(6, 2).Value = (double)overdueDues;
+                summarySheet.Cell(7, 1).Value = "Collection Rate (%)"; summarySheet.Cell(7, 2).Value = rate;
+                summarySheet.Range("B5:B7").Style.NumberFormat.Format = "#,##0.00";
+
+                // Occupancy Section
+                summarySheet.Cell(9, 1).Value = "OCCUPANCY METRICS";
+                summarySheet.Cell(9, 1).Style.Font.Bold = true;
+                summarySheet.Range("A9:B9").Merge().Style.Fill.BackgroundColor = ClosedXML.Excel.XLColor.LightGray;
+
+                var totalCapacity = await _context.Rooms.SumAsync(r => r.Capacity);
+                var occupiedBeds  = await _context.Students.CountAsync(s => s.RoomId != null);
+                var occupancyRate = totalCapacity > 0 ? Math.Round((double)occupiedBeds / totalCapacity * 100, 1) : 0;
+
+                summarySheet.Cell(10, 1).Value = "Total Capacity";    summarySheet.Cell(10, 2).Value = totalCapacity;
+                summarySheet.Cell(11, 1).Value = "Occupied Beds";    summarySheet.Cell(11, 2).Value = occupiedBeds;
+                summarySheet.Cell(12, 1).Value = "Occupancy Rate (%)"; summarySheet.Cell(12, 2).Value = occupancyRate;
+
+                summarySheet.Columns().AdjustToContents();
             }
-            allSheet.Columns().AdjustToContents();
 
             using var stream = new MemoryStream();
             workbook.SaveAs(stream);
-            var fileName = $"DormitoryReport_{DateTime.Now:yyyyMMdd_HHmm}.xlsx";
+            var fileSuffix = type == "overdue" ? "OverdueDetails" : "ConsolidatedSummary";
+            var fileName = $"DormitoryReport_{fileSuffix}_{DateTime.Now:yyyyMMdd}.xlsx";
             return File(stream.ToArray(),
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 fileName);
         }
 
         // ── PDF PRINT PAGE ──
-        public async Task<IActionResult> PrintReport()
+        public async Task<IActionResult> PrintReport(string type = "consolidated")
         {
             var allDues = await _context.DuesAndPenalties!
                 .Include(d => d.Student)
                     .ThenInclude(s => s!.Room)
+                .AsNoTracking()
                 .ToListAsync();
 
             var collected = allDues.Where(d => d.IsPaid).Sum(d => d.Amount);
@@ -214,8 +209,30 @@ namespace DormitoryManagementSystem.Controllers
             ViewBag.TotalOverdue     = overdue;
             ViewBag.TotalTarget      = total;
             ViewBag.CollectionRate   = rate;
-            ViewBag.DataAsOf         = DateTime.Now.ToString("MMMM d, yyyy HH:mm");
-            ViewBag.AllDues          = allDues.OrderBy(d => d.DueDate).ToList();
+            
+            // Occupancy
+            var totalCapacity = await _context.Rooms.SumAsync(r => r.Capacity);
+            var occupiedBeds  = await _context.Students.CountAsync(s => s.RoomId != null);
+            ViewBag.TotalCapacity = totalCapacity;
+            ViewBag.OccupiedBeds  = occupiedBeds;
+            ViewBag.OccupancyRate = totalCapacity > 0 ? Math.Round((double)occupiedBeds / totalCapacity * 100, 1) : 0;
+
+            ViewBag.DataAsOf = DateTime.Now.ToString("MMMM d, yyyy HH:mm");
+            ViewBag.ReportType = type;
+
+            if (type == "overdue")
+            {
+                ViewBag.OverdueList = allDues.Where(d => !d.IsPaid)
+                    .OrderByDescending(d => (DateTime.Now - d.DueDate).TotalDays)
+                    .Select(d => new {
+                        StudentName = d.Student?.FullName ?? "Unknown",
+                        Room = d.Student?.Room?.RoomNumber ?? "N/A",
+                        Type = d.Description ?? "Fee",
+                        Amount = d.Amount,
+                        DueDate = d.DueDate,
+                        DaysOverdue = (int)Math.Max(0, (DateTime.Now - d.DueDate).TotalDays)
+                    }).ToList();
+            }
 
             return View();
         }

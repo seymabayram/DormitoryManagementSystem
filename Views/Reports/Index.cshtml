@@ -260,13 +260,13 @@
                 <button class="btn btn-secondary btn-refresh" onclick="location.reload()">
                     <i class="bi bi-arrow-clockwise me-1"></i>Refresh
                 </button>
-                <a asp-controller="Reports" asp-action="PrintReport" target="_blank" class="btn btn-report">
+                <a id="btnGenerate" asp-controller="Reports" asp-action="PrintReport" target="_blank" class="btn btn-report disabled">
                     Generate Summary Report <i class="bi bi-chevron-right"></i>
                 </a>
-                <a asp-controller="Reports" asp-action="PrintReport" target="_blank" class="btn btn-export btn-outline-secondary">
+                <a id="btnPdf" asp-controller="Reports" asp-action="PrintReport" target="_blank" class="btn btn-export btn-outline-secondary disabled">
                     <i class="bi bi-filetype-pdf me-1"></i>PDF Export
                 </a>
-                <a asp-controller="Reports" asp-action="ExportExcel" class="btn btn-export btn-outline-success">
+                <a id="btnExcel" asp-controller="Reports" asp-action="ExportExcel" class="btn btn-export btn-outline-success disabled">
                     <i class="bi bi-file-earmark-excel me-1"></i>Excel Export
                 </a>
             </div>
@@ -321,21 +321,26 @@
         }
     });
 
-    function generateReport() {
-        var type = document.getElementById('reportType').value;
-        if (type === 'Report Type') {
-            alert('Please select a report type first.');
-            return;
+    // Sync dropdown with buttons
+    document.getElementById('reportType').addEventListener('change', function() {
+        var type = this.value;
+        var btnGenerate = document.getElementById('btnGenerate');
+        var btnPdf = document.getElementById('btnPdf');
+        var btnExcel = document.getElementById('btnExcel');
+
+        if (type) {
+            btnGenerate.classList.remove('disabled');
+            btnPdf.classList.remove('disabled');
+            btnExcel.classList.remove('disabled');
+
+            btnGenerate.href = '@Url.Action("PrintReport", "Reports")?type=' + type;
+            btnPdf.href = '@Url.Action("PrintReport", "Reports")?type=' + type;
+            btnExcel.href = '@Url.Action("ExportExcel", "Reports")?type=' + type;
+        } else {
+            btnGenerate.classList.add('disabled');
+            btnPdf.classList.add('disabled');
+            btnExcel.classList.add('disabled');
         }
-        alert('Generating: ' + type + ' report...');
-    }
-
-    function exportPDF() {
-        alert('PDF export feature coming soon.');
-    }
-
-    function exportExcel() {
-        alert('Excel export feature coming soon.');
-    }
+    });
 </script>
 }
