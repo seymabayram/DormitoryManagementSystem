@@ -12,7 +12,7 @@
 
         <div class="card border-0 shadow-lg" style="border-radius: 20px;">
             <div class="card-body p-5">
-                <form asp-action="Edit">
+                <form asp-action="Edit" novalidate>
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
                     <input type="hidden" asp-for="Id" />
                     <input type="hidden" asp-for="UserId" />
