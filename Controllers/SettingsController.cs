@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace DormitoryManagementSystem.Controllers
 {
-    [Authorize(Roles = "Admin,Staff")]
+    [Authorize(Roles = "Admin,Staff,Student")]
     public class SettingsController : Controller
     {
         private readonly AppDbContext _context;
@@ -22,9 +22,7 @@ namespace DormitoryManagementSystem.Controllers
         public async Task<IActionResult> Index()
         {
             var viewModel = new SettingsViewModel();
-            bool isAdmin = User.IsInRole("Admin");
-
-            if (isAdmin)
+            if (isAdmin || User.IsInRole("Staff"))
             {
                 // Load Global Settings
                 var dict = await _context.SystemSettings.ToDictionaryAsync(s => s.KeyName, s => s.Value);
@@ -36,7 +34,10 @@ namespace DormitoryManagementSystem.Controllers
                 viewModel.GlobalSettings.LatePenaltyFee = decimal.TryParse(dict.GetValueOrDefault("LatePenaltyFee", "0"), out var p) ? p : 0;
 
                 // Load Staff List
-                viewModel.StaffList = await _context.Staffs.Include(s => s.User).ToListAsync();
+                if (isAdmin)
+                {
+                    viewModel.StaffList = await _context.Staffs.Include(s => s.User).ToListAsync();
+                }
 
                 // Load Audit Logs (last 100)
                 viewModel.RecentLogs = await _context.AuditLogs
@@ -44,6 +45,29 @@ namespace DormitoryManagementSystem.Controllers
                     .OrderByDescending(a => a.Timestamp)
                     .Take(100)
                     .ToListAsync();
+            }
+
+            // If Student, load their specific info
+            if (User.IsInRole("Student"))
+            {
+                var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (int.TryParse(userIdStr, out int userId))
+                {
+                    var student = await _context.Students.Include(s => s.Room).FirstOrDefaultAsync(s => s.UserId == userId);
+                    if (student != null)
+                    {
+                        viewModel.StudentInfo = new StudentInfoViewModel
+                        {
+                            Id = student.Id,
+                            Name = student.Name,
+                            Surname = student.Surname,
+                            Email = student.Email,
+                            PhoneNumber = student.PhoneNumber,
+                            RoomName = student.Room?.RoomNumber,
+                            NationalId = student.NationalId
+                        };
+                    }
+                }
             }
 
             return View(viewModel);
@@ -115,10 +139,44 @@ namespace DormitoryManagementSystem.Controllers
                     _context.Users.Update(user);
                     await LogAction("Updated their password");
                     await _context.SaveChangesAsync();
-                    TempData["Success"] = "Password updated successfully.";
+                    TempData["Success"] = "Your password has been changed successfully.";
                 }
             }
             return Redirect(Url.Action("Index") + "#profile");
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Student")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateStudentInfo(SettingsViewModel model)
+        {
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdStr, out int userId)) return RedirectToAction(nameof(Index));
+
+            var student = await _context.Students.FirstOrDefaultAsync(s => s.UserId == userId);
+            if (student == null) return RedirectToAction(nameof(Index));
+
+            var info = model.StudentInfo;
+            List<string> changes = new();
+
+            if (student.Name != info.Name) { student.Name = info.Name; changes.Add("First Name"); }
+            if (student.Surname != info.Surname) { student.Surname = info.Surname; changes.Add("Last Name"); }
+            if (student.Email != info.Email) { student.Email = info.Email; changes.Add("E-Mail"); }
+            if (student.PhoneNumber != info.PhoneNumber) { student.PhoneNumber = info.PhoneNumber; changes.Add("Phone Number"); }
+
+            if (changes.Count > 0)
+            {
+                _context.Students.Update(student);
+                await LogAction($"Updated personal info: {string.Join(", ", changes)}");
+                await _context.SaveChangesAsync();
+                
+                if (changes.Count == 1) 
+                    TempData["Success"] = $"{changes[0]} has been updated successfully.";
+                else 
+                    TempData["Success"] = "Your profile information has been updated successfully.";
+            }
+
+            return Redirect(Url.Action("Index") + "#myinfo");
         }
 
         [HttpPost]

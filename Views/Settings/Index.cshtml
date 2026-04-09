@@ -1,7 +1,8 @@
 @model DormitoryManagementSystem.Models.SettingsViewModel
 @{
-    ViewData["Title"] = "System Settings";
     bool isAdmin = User.IsInRole("Admin");
+    bool isStaff = User.IsInRole("Staff");
+    bool isStudent = User.IsInRole("Student");
 }
 <style>
     /* ── MODERN SETTINGS STYLES ── */
@@ -106,27 +107,40 @@
 <div class="row g-0">
     <div class="col-12 text-center mt-3">
         <ul class="nav nav-pills settings-tabs-container" id="settingsTabs" role="tablist">
-            @if (isAdmin)
+            @if (isAdmin || isStaff)
             {
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab" aria-controls="general" aria-selected="true">
                         <i class="bi bi-building"></i> General
                     </button>
                 </li>
+                @if (isAdmin)
+                {
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab" aria-controls="users" aria-selected="false">
+                            <i class="bi bi-people-fill"></i> Users
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button" role="tab" aria-controls="security" aria-selected="false">
+                            <i class="bi bi-shield-lock-fill"></i> Security
+                        </button>
+                    </li>
+                }
+            }
+            
+            @if (isStudent)
+            {
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab" aria-controls="users" aria-selected="false">
-                        <i class="bi bi-people-fill"></i> Users
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button" role="tab" aria-controls="security" aria-selected="false">
-                        <i class="bi bi-shield-lock-fill"></i> Security
+                    <button class="nav-link active" id="myinfo-tab" data-bs-toggle="tab" data-bs-target="#myinfo" type="button" role="tab" aria-controls="myinfo" aria-selected="true">
+                        <i class="bi bi-person-lines-fill"></i> My Information
                     </button>
                 </li>
             }
+
             <li class="nav-item" role="presentation">
-                <button class="nav-link @(!isAdmin ? "active" : "")" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="@((!isAdmin).ToString().ToLower())">
-                    <i class="bi bi-person-badge-fill"></i> Profile
+                <button class="nav-link @(isStudent ? "" : "")" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">
+                    <i class="bi bi-shield-lock"></i> Security
                 </button>
             </li>
         </ul>
@@ -137,7 +151,7 @@
     <div class="card-body p-4 p-md-5">
         <div class="tab-content" id="settingsTabsContent">
             
-            @if (isAdmin)
+            @if (isAdmin || isStaff)
             {
                 <!-- Tab 1: General/Financial -->
                 <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
@@ -295,8 +309,73 @@
                 </div>
             }
 
-            <!-- Tab 4: Profile Settings -->
-            <div class="tab-pane fade @(!isAdmin ? "show active" : "")" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+            @if (isStudent)
+            {
+                <!-- Tab 5: Student Info -->
+                <div class="tab-pane fade show active" id="myinfo" role="tabpanel" aria-labelledby="myinfo-tab">
+                    <div class="row justify-content-center">
+                        <div class="col-md-9">
+                            <div class="form-section-title"><i class="bi bi-person-circle"></i> Personal Profile Information</div>
+                            <form asp-action="UpdateStudentInfo" method="post">
+                                <input type="hidden" asp-for="StudentInfo.Id" />
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <label asp-for="StudentInfo.Name" class="form-label"></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                            <input asp-for="StudentInfo.Name" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label asp-for="StudentInfo.Surname" class="form-label"></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                            <input asp-for="StudentInfo.Surname" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label asp-for="StudentInfo.Email" class="form-label"></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                            <input asp-for="StudentInfo.Email" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label asp-for="StudentInfo.PhoneNumber" class="form-label"></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-phone"></i></span>
+                                            <input asp-for="StudentInfo.PhoneNumber" class="form-control" placeholder="+90 5XX XXX XX XX" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Attached Room</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="bi bi-door-closed"></i></span>
+                                            <input value="@Model.StudentInfo.RoomName" class="form-control bg-light" readonly disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">TC Identity No</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="bi bi-card-text"></i></span>
+                                            <input value="@Model.StudentInfo.NationalId" class="form-control bg-light" readonly disabled />
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-12 text-end mt-4">
+                                        <button type="submit" class="btn btn-primary-action px-5">
+                                            <i class="bi bi-check-circle-fill me-2"></i> Update Profile Information
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Tab 4: Profile Settings (Password) -->
+            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                 <div class="row justify-content-center py-4">
                     <div class="col-md-7">
                         <div class="form-section-title text-center justify-content-center mb-4"><i class="bi bi-shield-lock"></i> Update Your Credentials</div>

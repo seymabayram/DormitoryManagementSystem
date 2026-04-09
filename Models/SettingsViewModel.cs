@@ -8,6 +8,32 @@ namespace DormitoryManagementSystem.Models
         public ProfileSettingsViewModel ProfileSettings { get; set; } = new();
         public List<AuditLog> RecentLogs { get; set; } = new();
         public List<Staff> StaffList { get; set; } = new();
+        public StudentInfoViewModel StudentInfo { get; set; } = new();
+    }
+
+    public class StudentInfoViewModel
+    {
+        public int Id { get; set; }
+        
+        [Required]
+        [Display(Name = "First Name")]
+        public string Name { get; set; } = string.Empty;
+
+        [Required]
+        [Display(Name = "Last Name")]
+        public string Surname { get; set; } = string.Empty;
+
+        [Required]
+        [EmailAddress]
+        [Display(Name = "E-Mail")]
+        public string Email { get; set; } = string.Empty;
+
+        [Phone]
+        [Display(Name = "Phone Number")]
+        public string? PhoneNumber { get; set; }
+
+        public string? RoomName { get; set; }
+        public string? NationalId { get; set; } // ReadOnly in UI
     }
 
     public class GlobalSettingsViewModel
