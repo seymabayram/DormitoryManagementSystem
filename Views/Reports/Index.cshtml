@@ -182,7 +182,7 @@
                                 <th>Type</th>
                                 <th>Amount (₺)</th>
                                 <th>Status</th>
-                                <th>Action</th>
+
                             </tr>
                         </thead>
                         <tbody>
@@ -200,11 +200,7 @@
                                     <td style="font-size:0.75rem;">@item.Type</td>
                                     <td class="fw-700">₺@(((decimal)item.Amount).ToString("N0"))</td>
                                     <td><span class="badge @badgeClass rounded-pill px-2">@badgeLabel (@days d)</span></td>
-                                    <td>
-                                        <a href="/Dues/Edit/@item.DuesId" class="btn btn-sm btn-light p-1" title="View/Edit">
-                                            <i class="bi bi-pencil-square" style="font-size:0.9rem;"></i>
-                                        </a>
-                                    </td>
+
                                 </tr>
                             }
                         </tbody>
