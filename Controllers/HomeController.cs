@@ -54,6 +54,7 @@ public class HomeController : Controller
         else
         {
             ViewBag.TotalStudents = await _context.Students.CountAsync();
+            ViewBag.TotalRooms    = await _context.Rooms.CountAsync();
             ViewBag.TotalCapacity = await _context.Rooms.SumAsync(r => r.Capacity);
             
             var allDues = await _context.DuesAndPenalties.ToListAsync();
