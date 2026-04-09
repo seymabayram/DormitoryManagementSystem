@@ -7,11 +7,11 @@ namespace DormitoryManagementSystem.Data
     {
         public static void Seed(AppDbContext context)
         {
-            // Veritabanı yoksa oluşturur, var olan veriler korunur
-            // context.Database.EnsureDeleted(); // (Verilerin silinmemesi için iptal edildi)
+            // Create database if it doesn't exist, preserve existing data
+            // context.Database.EnsureDeleted(); // (Uncomment only if you want to clear all data)
             context.Database.EnsureCreated();
 
-            // Eğer veritabanında hiç "Role" yoksa, 3 ana rolü ekle
+            // If no roles exist in the database, add the 3 main roles
             if (!context.Roles.Any())
             {
                 context.Roles.AddRange(
@@ -22,7 +22,7 @@ namespace DormitoryManagementSystem.Data
                 context.SaveChanges();
             }
 
-            // Eğer sistemde hiç kullanıcı yoksa, bir "Admin" hesabı oluştur (Şifre: 12345)
+            // If no users exist, create an initial "Admin" account (Password: 12345)
             if (!context.Users.Any())
             {
                 var adminRole = context.Roles.FirstOrDefault(r => r.RoleName == "Admin");
@@ -31,7 +31,7 @@ namespace DormitoryManagementSystem.Data
                     context.Users.Add(new User
                     {
                         Username = "admin",
-                        PasswordHash = "12345", // Gerçek projelerde burası mutlaka Hashlenmeli (örn. SHA256)!
+                        PasswordHash = "12345", // NOTE: Passwords must be hashed (e.g., SHA256) in real projects!
                         RoleId = adminRole.Id,
                         IsActive = true
                     });

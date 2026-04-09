@@ -9,7 +9,7 @@ namespace DormitoryManagementSystem.Data
         {
         }
 
-        // Raporundaki tablo tanımları (DbSet)
+        // Table definitions for the system entities (DbSet)
         public DbSet<Role> Roles { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Room> Rooms { get; set; }

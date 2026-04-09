@@ -21,7 +21,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 var app = builder.Build();
 
-// Veritabanını otomatik doldur (Kullanıcı Yoksa Admin oluşturur)
+// Seed the database automatically (Creates Admin if no user exists)
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();

@@ -256,7 +256,7 @@ namespace DormitoryManagementSystem.Controllers
             await LogAction("Downloaded a database backup");
             await _context.SaveChangesAsync();
 
-            // SQLite dosyası uygulama tarafından kilitli olduğundan FileShare.ReadWrite ile açıyoruz
+            // Since the SQLite database is potentially locked by the application, we open it with FileShare.ReadWrite
             byte[] bytes;
             await using (var fs = new FileStream(dbPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {

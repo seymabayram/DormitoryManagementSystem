@@ -513,7 +513,7 @@
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // URL içindeki #hash değerine göre sekmeyi aktif et
+            // Activate tab based on URL #hash location
             const hash = window.location.hash;
             if (hash) {
                 const tabTriggerEl = document.querySelector(`.nav-link[data-bs-target="${hash}"]`) || document.querySelector(`.nav-link[href="${hash}"]`);
@@ -523,7 +523,7 @@
                 }
             }
 
-            // Sekme her değiştiğinde URL'yi güncelle (tarayıcı geçmişini korur)
+            // Update URL hash whenever a tab changes (preserves browser history)
             const tabLinks = document.querySelectorAll('a[data-bs-toggle="tab"]');
             tabLinks.forEach(link => {
                 link.addEventListener('shown.bs.tab', function (e) {

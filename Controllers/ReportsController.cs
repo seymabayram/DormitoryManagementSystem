@@ -19,13 +19,13 @@ namespace DormitoryManagementSystem.Controllers
 
         public async Task<IActionResult> Index()
         {
-            // Tüm ödemeleri çek (İlişkili verilerle birlikte)
-            // Not: Include burada LEFT JOIN gibi davranır ancak modelde Required ise INNER JOIN olabilir.
-            // Bu yüzden verilerin düşmemesi için sorguyu daha esnek kurguluyoruz.
+            // Fetch all dues (including related entities)
+            // Note: Include behaves like a LEFT JOIN but can be an INNER JOIN if the model specifies Required.
+            // We construct the query flexibly to ensure no records are dropped.
             var allDues = await _context.DuesAndPenalties!
                 .Include(d => d.Student)
                     .ThenInclude(s => s!.Room)
-                .AsNoTracking() // Performans ve güncel veri için
+                .AsNoTracking() // Use NoTracking for performance and fresh data
                 .ToListAsync();
 
             // ── KEY FINANCIAL METRICS ──
@@ -76,7 +76,7 @@ namespace DormitoryManagementSystem.Controllers
             var overdueList = allDues
                 .Where(d => !d.IsPaid)
                 .OrderByDescending(d => (DateTime.Now - d.DueDate).TotalDays)
-                .Take(15) // Biraz daha fazla kayıt gösterelim
+                .Take(15) // Display more records locally in the list
                 .Select(d => new
                 {
                     StudentName = d.Student?.FullName ?? "Student Not Found",
