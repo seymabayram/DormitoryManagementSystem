@@ -8,176 +8,351 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Dormitory System</title>
+    <title>Create Account — Dormitory System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-        * { font-family: 'Outfit', sans-serif; }
+        *, *::before, *::after { box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+
         body {
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background: linear-gradient(135deg, #1a1a4e 0%, #25257a 50%, #1a1a4e 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 30px 0;
+            padding: 30px 20px;
+            position: relative;
+            overflow-x: hidden;
         }
+        body::before, body::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            opacity: 0.07;
+            animation: float 8s ease-in-out infinite;
+        }
+        body::before {
+            width: 550px; height: 550px;
+            background: #5B72FF;
+            top: -200px; right: -150px;
+        }
+        body::after {
+            width: 350px; height: 350px;
+            background: #FFD166;
+            bottom: -100px; left: -100px;
+            animation-delay: -4s;
+        }
+        @@keyframes float {
+            0%,100% { transform: translateY(0) scale(1); }
+            50%      { transform: translateY(-25px) scale(1.04); }
+        }
+
+        /* === SCENE === */
+        .register-scene {
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            width: 100%;
+            max-width: 760px;
+        }
+
+        .mascot {
+            position: absolute;
+            bottom: 0;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: mascotBob 3s ease-in-out infinite;
+        }
+        .mascot-girl { left: -75px; animation-delay: 0s; }
+        .mascot-boy  { right: -75px; animation-delay: -1.5s; }
+        .mascot img  { width: 110px; height: auto; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.35)); }
+        @@keyframes mascotBob {
+            0%,100% { transform: translateY(0); }
+            50%      { transform: translateY(-10px); }
+        }
+
+        .speech-bubble {
+            background: white;
+            border-radius: 14px;
+            padding: 7px 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #1A1F5E;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            white-space: nowrap;
+            position: relative;
+            margin-bottom: 8px;
+        }
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            width: 0; height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid white;
+        }
+        .mascot-girl .speech-bubble::after { left: 20px; }
+        .mascot-boy  .speech-bubble::after { right: 20px; }
+
+        /* === CARD === */
         .register-card {
-            background: rgba(255,255,255,0.97);
-            border-radius: 24px;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 24px 64px rgba(26,31,94,0.40);
             overflow: hidden;
-            width: 520px;
-            max-width: 95vw;
+            width: 540px;
+            max-width: 100%;
+            position: relative;
+            z-index: 5;
         }
+
         .register-header {
-            background: linear-gradient(135deg, #1cb5e0, #000046);
-            padding: 32px 30px 24px;
+            background: linear-gradient(135deg, #1A3A8A 0%, #3A6BC7 100%);
+            padding: 28px 30px 22px;
             text-align: center;
             color: white;
+            position: relative;
         }
-        .register-header i { font-size: 2.8rem; display: block; margin-bottom: 8px; }
-        .register-header h3 { font-weight: 800; margin: 0; font-size: 1.5rem; }
-        .register-header p { opacity: 0.75; margin: 4px 0 0; font-size: 0.88rem; }
+        .register-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; left: 0; right: 0;
+            height: 20px;
+            background: white;
+            border-radius: 20px 20px 0 0;
+        }
+        .dorm-logo { width: 50px; height: 50px; margin: 0 auto 10px; display: block; }
+        .register-header h3 { font-weight: 800; font-size: 1.4rem; margin: 0; letter-spacing: -0.3px; }
+        .register-header p  { opacity: 0.78; margin: 4px 0 0; font-size: 0.87rem; }
 
-        .role-tabs { display: flex; background: #f1f5f9; border-radius: 14px; padding: 5px; margin-bottom: 24px; }
+        .register-body { padding: 26px 32px 32px; }
+
+        /* Role Tabs */
+        .role-tabs {
+            display: flex;
+            background: #f0f4ff;
+            border-radius: 14px;
+            padding: 5px;
+            margin-bottom: 22px;
+            gap: 4px;
+        }
         .role-tab {
-            flex: 1; padding: 10px 5px; border: none; background: transparent;
-            border-radius: 10px; font-weight: 600; font-size: 0.8rem;
-            color: #6c7a89; cursor: pointer; transition: all 0.3s;
-            display: flex; flex-direction: column; align-items: center; gap: 3px;
+            flex: 1; padding: 10px 6px;
+            border: none; background: transparent;
+            border-radius: 10px; font-weight: 700; font-size: 0.8rem;
+            color: #6c7a9c; cursor: pointer; transition: all 0.3s ease;
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
         }
         .role-tab i { font-size: 1.2rem; }
-        .role-tab.active { background: white; color: #000046; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .role-tab.active-admin   { background: #1A3A8A; color: #FFD166; box-shadow: 0 4px 16px rgba(26,58,138,0.35); }
+        .role-tab.active-staff   { background: #2D7D4A; color: white;   box-shadow: 0 4px 16px rgba(45,125,74,0.35); }
+        .role-tab:hover:not(.active-admin):not(.active-staff) { background: rgba(26,58,138,0.08); color: #1A3A8A; }
 
-        .form-control {
-            border-radius: 12px; padding: 11px 15px;
-            border: 1.5px solid #e8ecf0; transition: all 0.3s;
+        /* Section label */
+        .section-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            margin: 18px 0 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .form-control:focus { border-color: #1cb5e0; box-shadow: 0 0 0 4px rgba(28,181,224,0.15); }
+        .section-label::before, .section-label::after {
+            content: ''; flex: 1; height: 1px; background: #e2e8f0;
+        }
+
+        .form-label-custom {
+            font-weight: 700; font-size: 0.75rem;
+            color: #64748b; text-transform: uppercase; letter-spacing: 0.8px;
+            margin-bottom: 5px; display: block;
+        }
+        .input-group { border-radius: 10px; overflow: hidden; }
         .input-group-text {
-            background: #f8fafc; border: 1.5px solid #e8ecf0; border-right: none;
-            border-radius: 12px 0 0 12px;
+            background: #f8faff; border: 1.5px solid #dde3f0;
+            border-right: none; color: #1A3A8A;
+            padding: 0 13px; font-size: 1rem;
+            border-radius: 10px 0 0 10px;
         }
-        .input-group .form-control { border-left: none; border-radius: 0 12px 12px 0; }
+        .form-control {
+            background: #f8faff; border: 1.5px solid #dde3f0;
+            border-left: none; border-radius: 0 10px 10px 0;
+            padding: 11px 14px; font-size: 0.93rem; color: #1A1F5E;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            background: white; border-color: #3A6BC7;
+            box-shadow: 0 0 0 3px rgba(58,107,199,0.15);
+            outline: none; color: #1A1F5E;
+        }
+        .form-control::placeholder { color: #a0aec0; }
+
         .btn-register {
-            background: linear-gradient(45deg, #1cb5e0, #000046);
+            background: linear-gradient(135deg, #1A3A8A, #3A6BC7);
             border: none; border-radius: 12px; padding: 13px;
-            font-weight: 700; font-size: 1rem; transition: all 0.3s;
+            font-weight: 700; font-size: 1rem;
+            letter-spacing: 0.3px; color: white; width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(26,58,138,0.30);
+            margin-top: 4px;
         }
-        .btn-register:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(28,181,224,0.4); }
+        .btn-register:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(26,58,138,0.45); color: white; }
+        .btn-register:active { transform: translateY(0); }
+
+        .login-link { color: #3A6BC7; font-weight: 700; text-decoration: none; }
+        .login-link:hover { color: #1A3A8A; text-decoration: underline; }
+
+        .alert-danger { border-radius: 10px; font-size: 0.87rem; }
+        .text-danger  { font-size: 0.8rem; }
+
+        @@media (max-width: 620px) {
+            .mascot { display: none; }
+            .register-body { padding: 18px 18px 26px; }
+        }
     </style>
 </head>
 <body>
-    <div class="register-card">
-        <div class="register-header">
-            <img src="~/assets/image.png" alt="Dormitory Logo" style="height: 100px; margin-bottom: 20px; display: inline-block;" />
-            <h3>Create Account</h3>
-            <p>Join the Dormitory Management System</p>
+    <div class="register-scene">
+        <!-- Girl Mascot -->
+        <div class="mascot mascot-girl">
+            <div class="speech-bubble">Join us! 🎓</div>
+            <img src="~/assets/mascot-girl.svg" alt="Girl Student" />
         </div>
-        <div class="p-4 p-md-5">
 
-            @if (TempData["Error"] != null)
-            {
-                <div class="alert alert-danger rounded-3 py-2 small mb-4">@TempData["Error"]</div>
-            }
+        <!-- Register Card -->
+        <div class="register-card">
+            <div class="register-header">
+                <svg class="dorm-logo" viewBox="0 0 54 54" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="54" height="54" rx="14" fill="#1A1F5E"/>
+                    <rect x="10" y="28" width="34" height="20" rx="3" fill="#3A6BC7"/>
+                    <polygon points="7,30 27,14 47,30" fill="#5B72FF"/>
+                    <circle cx="27" cy="14" r="3.5" fill="#FFD166"/>
+                    <rect x="14" y="32" width="7" height="7" rx="2" fill="#7B9FFF"/>
+                    <rect x="24" y="32" width="6" height="7" rx="2" fill="#7B9FFF"/>
+                    <rect x="33" y="32" width="7" height="7" rx="2" fill="#7B9FFF"/>
+                    <rect x="22" y="40" width="10" height="8" rx="2" fill="#FFD166"/>
+                </svg>
+                <h3>Create Account</h3>
+                <p>Join the Dormitory Management System</p>
+            </div>
 
-            <form asp-action="Register" method="post">
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small fw-bold rounded-3 mb-4"></div>
+            <div class="register-body">
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger py-2 small mb-3">@TempData["Error"]</div>
+                }
 
-                <!-- Role Tabs -->
-                <input type="hidden" asp-for="SelectedRole" id="selectedRoleInput" />
-                <div class="role-tabs mb-4">
-                    <button type="button" class="role-tab active" data-role="Admin" onclick="selectRole(this,'Admin')">
-                        <i class="bi bi-shield-fill-check"></i> Admin
-                    </button>
-                    <button type="button" class="role-tab" data-role="Staff" onclick="selectRole(this,'Staff')">
-                        <i class="bi bi-person-badge-fill"></i> Staff
-                    </button>
-                </div>
+                <form asp-action="Register" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small mb-3" style="display:@(ViewData.ModelState.ErrorCount > 0 ? "block" : "none")"></div>
 
-                <!-- Name + Surname -->
-                <div class="row g-3 mb-3">
-                    <div class="col-6">
-                        <label asp-for="Name" class="form-label fw-bold text-secondary small text-uppercase"></label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person text-primary"></i></span>
-                            <input asp-for="Name" class="form-control" placeholder="First name" />
+                    <!-- Role Selector -->
+                    <input type="hidden" asp-for="SelectedRole" id="selectedRoleInput" />
+                    <div class="role-tabs mb-3">
+                        <button type="button" class="role-tab" id="tab-Admin" data-role="Admin" onclick="selectRole(this,'Admin')">
+                            <i class="bi bi-shield-fill-check"></i> Admin
+                        </button>
+                        <button type="button" class="role-tab" id="tab-Staff" data-role="Staff" onclick="selectRole(this,'Staff')">
+                            <i class="bi bi-person-badge-fill"></i> Staff
+                        </button>
+                    </div>
+
+                    <!-- Personal Info -->
+                    <div class="section-label">Personal Information</div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label-custom">First Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <input asp-for="Name" class="form-control" placeholder="First name" />
+                            </div>
+                            <span asp-validation-for="Name" class="text-danger small"></span>
                         </div>
-                        <span asp-validation-for="Name" class="text-danger small"></span>
-                    </div>
-                    <div class="col-6">
-                        <label asp-for="Surname" class="form-label fw-bold text-secondary small text-uppercase"></label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person text-primary"></i></span>
-                            <input asp-for="Surname" class="form-control" placeholder="Last name" />
+                        <div class="col-6">
+                            <label class="form-label-custom">Last Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <input asp-for="Surname" class="form-control" placeholder="Last name" />
+                            </div>
+                            <span asp-validation-for="Surname" class="text-danger small"></span>
                         </div>
-                        <span asp-validation-for="Surname" class="text-danger small"></span>
                     </div>
-                </div>
 
-                <!-- Username -->
-                <div class="form-group mb-3">
-                    <label asp-for="Username" class="form-label fw-bold text-secondary small text-uppercase"></label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-at text-primary"></i></span>
-                        <input asp-for="Username" class="form-control" placeholder="Choose a username" />
-                    </div>
-                    <span asp-validation-for="Username" class="text-danger small"></span>
-                </div>
-
-                <!-- Email -->
-                <div class="form-group mb-3">
-                    <label asp-for="Email" class="form-label fw-bold text-secondary small text-uppercase"></label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-envelope text-primary"></i></span>
-                        <input asp-for="Email" class="form-control" placeholder="you@example.com" />
-                    </div>
-                    <span asp-validation-for="Email" class="text-danger small"></span>
-                </div>
-
-                <!-- Password -->
-                <div class="row g-3 mb-4">
-                    <div class="col-6">
-                        <label asp-for="Password" class="form-label fw-bold text-secondary small text-uppercase"></label>
+                    <!-- Account Info -->
+                    <div class="section-label">Account Details</div>
+                    <div class="mb-3">
+                        <label class="form-label-custom">Username</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-lock text-primary"></i></span>
-                            <input asp-for="Password" class="form-control" placeholder="Password" />
+                            <span class="input-group-text"><i class="bi bi-at"></i></span>
+                            <input asp-for="Username" class="form-control" placeholder="Choose a username" autocomplete="username" />
                         </div>
-                        <span asp-validation-for="Password" class="text-danger small"></span>
+                        <span asp-validation-for="Username" class="text-danger small"></span>
                     </div>
-                    <div class="col-6">
-                        <label asp-for="ConfirmPassword" class="form-label fw-bold text-secondary small text-uppercase"></label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-lock-fill text-primary"></i></span>
-                            <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm" />
-                        </div>
-                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
-                    </div>
-                </div>
 
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-register text-white">
+                    <div class="mb-3">
+                        <label class="form-label-custom">Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                            <input asp-for="Email" class="form-control" placeholder="you@example.com" autocomplete="email" />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="section-label">Security</div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-6">
+                            <label class="form-label-custom">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                <input asp-for="Password" class="form-control" placeholder="Password" autocomplete="new-password" />
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label-custom">Confirm</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm" autocomplete="new-password" />
+                            </div>
+                            <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-register">
                         <i class="bi bi-person-check-fill me-2"></i>Create Account
                     </button>
-                </div>
 
-                <div class="text-center mt-4">
-                    <span class="text-muted small">Already have an account? </span>
-                    <a asp-controller="Account" asp-action="Login" class="fw-bold text-decoration-none" style="color: #1cb5e0;">Log in.</a>
-                </div>
-            </form>
+                    <div class="text-center mt-4">
+                        <span class="text-muted small">Already have an account? </span>
+                        <a asp-controller="Account" asp-action="Login" class="login-link">Sign in</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Boy Mascot -->
+        <div class="mascot mascot-boy">
+            <div class="speech-bubble">Easy sign-up! ✨</div>
+            <img src="~/assets/mascot-boy.svg" alt="Boy Student" />
         </div>
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        const roleActiveClass = { 'Admin': 'active-admin', 'Staff': 'active-staff' };
         function selectRole(btn, role) {
-            document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
-            btn.classList.add('active');
+            document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active-admin','active-staff'));
+            btn.classList.add(roleActiveClass[role]);
             document.getElementById('selectedRoleInput').value = role;
         }
         window.addEventListener('DOMContentLoaded', function () {

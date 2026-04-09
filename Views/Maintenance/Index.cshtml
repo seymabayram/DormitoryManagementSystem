@@ -3,53 +3,121 @@
     ViewData["Title"] = "Maintenance Tickets";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bolder" style="color: #2c3e50;">Service & Repair Tickets</h2>
-    <a asp-action="Create" class="btn btn-danger rounded-pill px-4 shadow-sm">+ File New Ticket</a>
+<div class="page-header" data-aos="fade-down">
+    <div>
+        <div class="page-title">Maintenance Tickets
+            <span>Service & repair request tracking</span>
+        </div>
+    </div>
+    <a asp-action="Create" class="btn-primary-action">
+        <i class="bi bi-plus-lg"></i> File New Ticket
+    </a>
 </div>
 
-<div class="card border-0 shadow-sm" style="border-radius: 16px; overflow: hidden;">
-    <div class="card-body p-0">
-        <table class="table table-hover align-middle mb-0">
-            <thead style="background: #fdf5f5;">
+<!-- Status Summary -->
+<div class="d-flex gap-3 mb-4 flex-wrap" data-aos="fade-up" data-aos-delay="50">
+    <div style="background:white;border-radius:12px;padding:10px 18px;box-shadow:0 2px 12px rgba(26,31,94,0.07);display:flex;align-items:center;gap:10px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:#fff7ed;color:#d97706;display:flex;align-items:center;justify-content:center;font-size:1rem;"><i class="bi bi-clock-fill"></i></div>
+        <div>
+            <div style="font-size:1.1rem;font-weight:800;color:#92400e;">@Model.Count(t => !t.IsResolved)</div>
+            <div style="font-size:0.72rem;color:#94a3b8;font-weight:600;">PENDING</div>
+        </div>
+    </div>
+    <div style="background:white;border-radius:12px;padding:10px 18px;box-shadow:0 2px 12px rgba(26,31,94,0.07);display:flex;align-items:center;gap:10px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:#f0fdf4;color:#2D7D4A;display:flex;align-items:center;justify-content:center;font-size:1rem;"><i class="bi bi-check-circle-fill"></i></div>
+        <div>
+            <div style="font-size:1.1rem;font-weight:800;color:#166534;">@Model.Count(t => t.IsResolved)</div>
+            <div style="font-size:0.72rem;color:#94a3b8;font-weight:600;">RESOLVED</div>
+        </div>
+    </div>
+    <div style="background:white;border-radius:12px;padding:10px 18px;box-shadow:0 2px 12px rgba(26,31,94,0.07);display:flex;align-items:center;gap:10px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:#eff6ff;color:#1A3A8A;display:flex;align-items:center;justify-content:center;font-size:1rem;"><i class="bi bi-ticket-fill"></i></div>
+        <div>
+            <div style="font-size:1.1rem;font-weight:800;color:#1A1F5E;">@Model.Count()</div>
+            <div style="font-size:0.72rem;color:#94a3b8;font-weight:600;">TOTAL</div>
+        </div>
+    </div>
+</div>
+
+<div class="table-card" data-aos="fade-up" data-aos-delay="100">
+    <div class="table-card-header" style="background:linear-gradient(135deg,#1A1F5E,#1A3A8A);">
+        <div class="table-card-title">
+            <i class="bi bi-tools"></i> All Tickets
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
                 <tr>
-                    <th class="ps-4 py-3">Ticket ID</th>
-                    <th class="py-3">Reporter</th>
-                    <th class="py-3">Room</th>
-                    <th class="py-3">Issue</th>
-                    <th class="py-3">Status</th>
-                    <th class="text-end pe-4 py-3">Action</th>
+                    <th style="padding-left:20px;">Ticket ID</th>
+                    <th>Reporter</th>
+                    <th>Room</th>
+                    <th>Issue</th>
+                    <th>Status</th>
+                    <th style="text-align:right;padding-right:20px;">Action</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model) {
-                <tr>
-                    <td class="ps-4 font-monospace">#@item.Id.ToString("D5")</td>
-                    <td>
-                        <div class="fw-bold text-dark">@(item.Student?.FullName ?? "Unknown")</div>
-                    </td>
-                    <td>
-                        <span class="badge bg-light text-dark border">@(item.Room?.RoomNumber ?? "N/A")</span>
-                    </td>
-                    <td>
-                        <div class="text-truncate" style="max-width: 250px;">@item.Issue</div>
-                    </td>
-                    <td>
-                        @if(item.IsResolved) {
-                            <span class="badge bg-success bg-opacity-25 text-success border border-success rounded-pill px-3 py-1">Resolved</span>
-                        } else {
-                            <span class="badge bg-warning bg-opacity-25 text-warning border border-warning rounded-pill px-3 py-1 animate__animated animate__pulse animate__infinite">Pending</span>
-                        }
-                    </td>
-                    <td class="text-end pe-4">
-                        @if (!item.IsResolved && (User.IsInRole("Admin") || User.IsInRole("Staff")))
-                        {
-                            <form asp-action="Resolve" asp-route-id="@item.Id" method="post" style="display:inline;">
-                                <button type="submit" class="btn btn-sm btn-outline-success rounded-pill fw-bold px-3">Mark Resolved</button>
-                            </form>
-                        }
-                    </td>
-                </tr>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="6" style="text-align:center;padding:48px 20px;color:#94a3b8;">
+                            <i class="bi bi-tools" style="font-size:2.5rem;display:block;margin-bottom:10px;opacity:0.4;"></i>
+                            No maintenance tickets found.
+                        </td>
+                    </tr>
+                }
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="padding-left:20px;">
+                            <span style="font-family:monospace;font-weight:700;color:#1A3A8A;background:#eff6ff;padding:4px 10px;border-radius:6px;font-size:0.85rem;">
+                                #@item.Id.ToString("D5")
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <div class="avatar-circle" style="width:34px;height:34px;border-radius:9px;font-size:0.82rem;background:linear-gradient(135deg,#1A3A8A,#3A6BC7);">
+                                    @((item.Student?.FullName ?? "?").Substring(0,1).ToUpper())
+                                </div>
+                                <div style="font-weight:600;color:#1A1F5E;font-size:0.9rem;">@(item.Student?.FullName ?? "Unknown")</div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge-room"><i class="bi bi-door-open me-1"></i>@(item.Room?.RoomNumber ?? "N/A")</span>
+                        </td>
+                        <td>
+                            <div style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#475569;font-size:0.9rem;" title="@item.Issue">
+                                @item.Issue
+                            </div>
+                        </td>
+                        <td>
+                            @if (item.IsResolved)
+                            {
+                                <span class="badge-resolved"><i class="bi bi-check-circle-fill me-1"></i>Resolved</span>
+                            }
+                            else
+                            {
+                                <span class="badge-pending">
+                                    <i class="bi bi-clock me-1"></i>Pending
+                                </span>
+                            }
+                        </td>
+                        <td style="text-align:right;padding-right:20px;">
+                            @if (!item.IsResolved && (User.IsInRole("Admin") || User.IsInRole("Staff")))
+                            {
+                                <form asp-action="Resolve" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                    <button type="submit" class="btn-action btn-resolve">
+                                        <i class="bi bi-check-lg"></i> Mark Resolved
+                                    </button>
+                                </form>
+                            }
+                            else if (item.IsResolved)
+                            {
+                                <span style="color:#94a3b8;font-size:0.8rem;"><i class="bi bi-check-all"></i> Done</span>
+                            }
+                        </td>
+                    </tr>
                 }
             </tbody>
         </table>

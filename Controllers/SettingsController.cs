@@ -197,7 +197,7 @@ namespace DormitoryManagementSystem.Controllers
             return File(bytes, "application/octet-stream", $"DormitoryBackup_{DateTime.Now:yyyyMMdd_HHmmss}.db");
         }
 
-        private async Task LogAction(string description)
+        private Task LogAction(string description)
         {
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (int.TryParse(userIdStr, out int userId))
@@ -209,6 +209,7 @@ namespace DormitoryManagementSystem.Controllers
                     Timestamp = DateTime.Now
                 });
             }
+            return Task.CompletedTask;
         }
     }
 }

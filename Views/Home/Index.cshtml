@@ -100,13 +100,21 @@
 
 </style>
 
-<canvas id="starCanvas"></canvas>
-<div class="nebula"></div>
+
 
 <!-- Yeni Eklenen Navbar (Logolu) -->
 <nav class="navbar navbar-dark bg-transparent pt-4 w-100 position-absolute top-0 start-0 px-4" style="z-index: 1000;">
     <a class="navbar-brand d-flex align-items-center" href="#">
-        <img src="~/assets/image.png" alt="Logo" height="70" class="me-2">
+        <svg class="me-2" width="54" height="54" viewBox="0 0 54 54" xmlns="http://www.w3.org/2000/svg" style="border-radius:12px;">
+            <rect width="54" height="54" rx="14" fill="#1A1F5E"/>
+            <rect x="10" y="28" width="34" height="20" rx="3" fill="#3A6BC7"/>
+            <polygon points="7,30 27,14 47,30" fill="#5B72FF"/>
+            <circle cx="27" cy="14" r="3.5" fill="#FFD166"/>
+            <rect x="14" y="32" width="7" height="7" rx="2" fill="#7B9FFF"/>
+            <rect x="24" y="32" width="6" height="7" rx="2" fill="#7B9FFF"/>
+            <rect x="33" y="32" width="7" height="7" rx="2" fill="#7B9FFF"/>
+            <rect x="22" y="40" width="10" height="8" rx="2" fill="#FFD166"/>
+        </svg>
         <span class="fs-4 fw-bold" style="color: #fff; letter-spacing: 1px;">Dormitory Management System</span>
     </a>
 </nav>
@@ -178,42 +186,5 @@
 </div>
 
 @section Scripts {
-    <script>
-        // Star Field Engine
-        const canvas = document.getElementById('starCanvas');
-        const ctx = canvas.getContext('2d');
-        let stars = [];
-
-        function initStars() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            stars = [];
-            for(let i=0; i<180; i++) {
-                stars.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    size: Math.random() * 2 + 0.2,
-                    opacity: Math.random() * 0.6,
-                    speed: Math.random() * 0.12 + 0.05
-                });
-            }
-        }
-
-        function animateStars() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            stars.forEach(s => {
-                ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
-                ctx.beginPath();
-                ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-                ctx.fill();
-                s.y -= s.speed;
-                if(s.y < 0) s.y = canvas.height;
-            });
-            requestAnimationFrame(animateStars);
-        }
-
-        window.addEventListener('resize', initStars);
-        initStars();
-        animateStars();
-    </script>
+    <!-- Global star field handles the background -->
 }

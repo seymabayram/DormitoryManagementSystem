@@ -3,7 +3,96 @@
     ViewData["Title"] = "System Settings";
     bool isAdmin = User.IsInRole("Admin");
 }
+<style>
+    /* ── MODERN SETTINGS STYLES ── */
+    .settings-tabs-container {
+        padding: 6px;
+        background: #f1f5f9;
+        border-radius: 16px;
+        display: inline-flex;
+        gap: 4px;
+        margin-bottom: 2rem;
+    }
+    .settings-tabs-container .nav-link {
+        border-radius: 12px;
+        border: none !important;
+        padding: 10px 24px;
+        color: #64748b !important;
+        font-weight: 700;
+        font-size: 0.9rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: transparent !important;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .settings-tabs-container .nav-link:hover { color: var(--navy) !important; background: rgba(255,255,255,0.5) !important; }
+    .settings-tabs-container .nav-link.active {
+        background: white !important;
+        color: var(--navy) !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        transform: scale(1.02);
+    }
+    
+    .settings-card {
+        border-radius: 24px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 40px rgba(26,31,94,0.05);
+        background: white;
+    }
 
+    .form-section-title {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .form-section-title i { color: var(--blue); }
+
+    .input-group-text {
+        background: #f8faff;
+        border-color: #e2e8f0;
+        color: #94a3b8;
+        border-radius: 12px 0 0 12px !important;
+    }
+    .form-control {
+        border-radius: 12px !important;
+        padding: 12px 16px;
+        border-color: #e2e8f0;
+        background: #ffffff;
+        font-weight: 500;
+    }
+    .input-group > .form-control { border-radius: 0 12px 12px 0 !important; }
+    .form-control:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        background: white;
+    }
+    .form-label { font-size: 0.82rem; font-weight: 700; color: #64748b; margin-bottom: 6px; }
+
+    /* Staff Table */
+    .staff-row:hover { background: #f8faff; }
+    .staff-badge-admin { background: #ffe4e6; color: #e11d48; }
+    .staff-badge-staff { background: #f0fdf4; color: #166534; }
+
+    /* Audit Log Feed */
+    .log-item {
+        padding: 12px 16px;
+        border-radius: 14px;
+        margin-bottom: 8px;
+        background: #f8faff;
+        border: 1px solid #f1f5f9;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+    .log-meta { font-size: 0.75rem; color: #94a3b8; min-width: 140px; }
+    .log-user { font-weight: 700; color: var(--navy); min-width: 100px; }
+    .log-desc { font-size: 0.88rem; color: #475569; }
+</style>
 <div class="row mt-4">
     <div class="col-12">
         <h2 class="fw-bolder" style="color: #2c3e50;">
@@ -14,34 +103,37 @@
 </div>
 
 
-<div class="card border-0 shadow-sm rounded-4 mt-3">
-    <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
-        <ul class="nav nav-tabs card-header-tabs" id="settingsTabs" role="tablist">
+<div class="row g-0">
+    <div class="col-12 text-center mt-3">
+        <ul class="nav nav-pills settings-tabs-container" id="settingsTabs" role="tablist">
             @if (isAdmin)
             {
-                <li class="nav-item border-0">
-                    <a class="nav-link active fw-bold px-4" id="general-tab" data-bs-toggle="tab" href="#general" role="tab" aria-controls="general" aria-selected="true">
-                        <i class="bi bi-building me-1"></i> General/Financial
-                    </a>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab" aria-controls="general" aria-selected="true">
+                        <i class="bi bi-building"></i> General
+                    </button>
                 </li>
-                <li class="nav-item border-0">
-                    <a class="nav-link fw-bold px-4" id="users-tab" data-bs-toggle="tab" href="#users" role="tab" aria-controls="users" aria-selected="false">
-                        <i class="bi bi-people-fill me-1"></i> User Management
-                    </a>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab" aria-controls="users" aria-selected="false">
+                        <i class="bi bi-people-fill"></i> Users
+                    </button>
                 </li>
-                <li class="nav-item border-0">
-                    <a class="nav-link fw-bold px-4 text-danger" id="security-tab" data-bs-toggle="tab" href="#security" role="tab" aria-controls="security" aria-selected="false">
-                        <i class="bi bi-shield-lock-fill me-1"></i> Security & Backup
-                    </a>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button" role="tab" aria-controls="security" aria-selected="false">
+                        <i class="bi bi-shield-lock-fill"></i> Security
+                    </button>
                 </li>
             }
-            <li class="nav-item border-0">
-                <a class="nav-link @(!isAdmin ? "active" : "") fw-bold px-4" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="@((!isAdmin).ToString().ToLower())">
-                    <i class="bi bi-person-badge-fill me-1"></i> @(isAdmin ? "Admin Profile" : "Staff Profile")
-                </a>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link @(!isAdmin ? "active" : "")" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="@((!isAdmin).ToString().ToLower())">
+                    <i class="bi bi-person-badge-fill"></i> Profile
+                </button>
             </li>
         </ul>
     </div>
+</div>
+
+<div class="card border-0 settings-card">
     <div class="card-body p-4 p-md-5">
         <div class="tab-content" id="settingsTabsContent">
             
@@ -49,45 +141,60 @@
             {
                 <!-- Tab 1: General/Financial -->
                 <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
-                    <h5 class="fw-bold mb-4">General Dormitory Information</h5>
+                    <div class="form-section-title"><i class="bi bi-building"></i> Dormitory Information</div>
                     <form asp-action="UpdateGlobalSettings" method="post">
                         <div class="row g-4">
                             <div class="col-md-6">
-                                <label asp-for="GlobalSettings.DormitoryName" class="form-label text-secondary fw-semibold"></label>
-                                <input asp-for="GlobalSettings.DormitoryName" class="form-control bg-light border-1" />
+                                <label asp-for="GlobalSettings.DormitoryName" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-info-circle"></i></span>
+                                    <input asp-for="GlobalSettings.DormitoryName" class="form-control" />
+                                </div>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="GlobalSettings.ContactPhone" class="form-label text-secondary fw-semibold"></label>
-                                <input asp-for="GlobalSettings.ContactPhone" class="form-control bg-light border-1" placeholder="+90 5XX XXX XX XX" />
-                            </div>
-                            <div class="col-12">
-                                <label asp-for="GlobalSettings.DormitoryAddress" class="form-label text-secondary fw-semibold"></label>
-                                <textarea asp-for="GlobalSettings.DormitoryAddress" class="form-control bg-light border-1" rows="2"></textarea>
-                            </div>
-                            <div class="col-12">
-                                <label asp-for="GlobalSettings.ContactEmail" class="form-label text-secondary fw-semibold"></label>
-                                <input asp-for="GlobalSettings.ContactEmail" class="form-control bg-light border-1" placeholder="dormitory@example.com" />
-                            </div>
-                            
-                            <div class="col-12 mt-4"><hr class="text-muted"/></div>
-                            
-                            <h6 class="fw-bold mb-0">Financial Settings</h6>
-                            <div class="col-md-6 mt-3">
-                                <label asp-for="GlobalSettings.DefaultMonthlyDue" class="form-label text-secondary fw-semibold"></label>
+                                <label asp-for="GlobalSettings.ContactPhone" class="form-label"></label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light">₺</span>
-                                    <input asp-for="GlobalSettings.DefaultMonthlyDue" class="form-control border-1 bg-light" />
+                                    <span class="input-group-text"><i class="bi bi-phone"></i></span>
+                                    <input asp-for="GlobalSettings.ContactPhone" class="form-control" placeholder="+90 5XX XXX XX XX" />
                                 </div>
                             </div>
-                            <div class="col-md-6 mt-3">
-                                <label asp-for="GlobalSettings.LatePenaltyFee" class="form-label text-secondary fw-semibold"></label>
+                            <div class="col-12">
+                                <label asp-for="GlobalSettings.DormitoryAddress" class="form-label"></label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light">₺</span>
-                                    <input asp-for="GlobalSettings.LatePenaltyFee" class="form-control border-1 bg-light" />
+                                    <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                    <textarea asp-for="GlobalSettings.DormitoryAddress" class="form-control" rows="2"></textarea>
                                 </div>
                             </div>
-                            <div class="col-12 text-end mt-4">
-                                <button type="submit" class="btn btn-primary rounded-pill px-4">Save Global Settings</button>
+                            <div class="col-12">
+                                <label asp-for="GlobalSettings.ContactEmail" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                    <input asp-for="GlobalSettings.ContactEmail" class="form-control" placeholder="dormitory@example.com" />
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 pt-4 pb-2">
+                                <div class="form-section-title mb-0"><i class="bi bi-wallet2"></i> Financial Configurations</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label asp-for="GlobalSettings.DefaultMonthlyDue" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₺</span>
+                                    <input asp-for="GlobalSettings.DefaultMonthlyDue" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="GlobalSettings.LatePenaltyFee" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₺</span>
+                                    <input asp-for="GlobalSettings.LatePenaltyFee" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="col-12 text-end mt-5">
+                                <button type="submit" class="btn btn-primary-action px-5">
+                                    <i class="bi bi-save2 me-2"></i> Save Global Settings
+                                </button>
                             </div>
                         </div>
                     </form>
@@ -95,15 +202,14 @@
 
                 <!-- Tab 2: User Management -->
                 <div class="tab-pane fade" id="users" role="tabpanel" aria-labelledby="users-tab">
-                    <h5 class="fw-bold mb-4">Staff &amp; Admin Management</h5>
+                    <div class="form-section-title"><i class="bi bi-people-fill"></i> Staff & Admin Accounts</div>
 
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead class="table-light text-secondary">
+                        <table class="table align-middle">
+                            <thead class="text-secondary">
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Username</th>
+                                    <th>Personnel</th>
+                                    <th>Access Details</th>
                                     <th>Role</th>
                                     <th>Status</th>
                                     <th class="text-end">Actions</th>
@@ -112,25 +218,33 @@
                             <tbody>
                                 @foreach (var item in Model.StaffList)
                                 {
-                                    <tr>
-                                        <td><span class="fw-bold">@item.FullName</span></td>
-                                        <td>@item.Email</td>
-                                        <td><code>@item.User?.Username</code></td>
+                                    <tr class="staff-row">
                                         <td>
-                                            @if (item.User?.RoleId == 1) { <span class="badge bg-danger">Admin</span> }
-                                            else { <span class="badge bg-secondary">Staff</span> }
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="user-avatar" style="width:32px;height:32px;font-size:0.8rem;">@(item.FullName?.Substring(0,1))</div>
+                                                <span class="fw-bold">@item.FullName</span>
+                                            </div>
                                         </td>
                                         <td>
-                                            @if (item.User?.IsActive == true) { <span class="badge bg-success bg-opacity-25 text-success">Active</span> }
-                                            else { <span class="badge bg-secondary bg-opacity-25 text-secondary">Inactive</span> }
+                                            <div class="small">@item.Email</div>
+                                            <div class="small text-muted">User: @item.User?.Username</div>
+                                        </td>
+                                        <td>
+                                            @if (item.User?.RoleId == 1) { <span class="badge staff-badge-admin rounded-pill px-3">Admin</span> }
+                                            else { <span class="badge staff-badge-staff rounded-pill px-3">Staff</span> }
+                                        </td>
+                                        <td>
+                                            @if (item.User?.IsActive == true) { <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2">Active</span> }
+                                            else { <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-2">Inactive</span> }
                                         </td>
                                         <td class="text-end">
                                             @if (item.User?.Id != int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0"))
                                             {
                                                 <form asp-action="ToggleUserStatus" method="post" class="d-inline">
                                                     <input type="hidden" name="userId" value="@item.User?.Id" />
-                                                    <button type="submit" class="btn btn-sm @(item.User?.IsActive == true ? "btn-outline-danger" : "btn-outline-success") rounded-pill px-3" title="Toggle Status">
-                                                        <i class="bi @(item.User?.IsActive == true ? "bi-person-x-fill" : "bi-person-check-fill")"></i> Toggle Status
+                                                    <button type="submit" class="btn btn-sm btn-outline-@(item.User?.IsActive == true ? "danger" : "success") rounded-pill px-3 fw-bold">
+                                                        <i class="bi @(item.User?.IsActive == true ? "bi-person-x" : "bi-person-check")"></i> 
+                                                        @(item.User?.IsActive == true ? "Disable" : "Enable")
                                                     </button>
                                                 </form>
                                             }
@@ -144,77 +258,85 @@
 
                 <!-- Tab 3: Security & Backup -->
                 <div class="tab-pane fade" id="security" role="tabpanel" aria-labelledby="security-tab">
-                    <h5 class="fw-bold mb-3 text-danger"><i class="bi bi-exclamation-triangle-fill"></i> Danger Zone</h5>
-                    <div class="border border-danger border-2 rounded-3 p-4 mb-5 bg-danger bg-opacity-10">
+                    <div class="form-section-title text-danger"><i class="bi bi-shield-lock-fill"></i> Security &amp; Data Control</div>
+                    
+                    <div class="p-4 mb-5 rounded-4" style="background: #fff5f5; border: 1px dashed #feb2b2;">
                         <div class="row align-items-center">
-                            <div class="col-md-8">
-                                <h6 class="fw-bold text-danger mb-1">Database Backup</h6>
-                                <p class="text-muted mb-0 small">Download the entire SQLite database file containing all application data. Ensure this file is kept secure as it contains sensitive information.</p>
+                            <div class="col-md-9">
+                                <h6 class="fw-bold text-danger mb-1"><i class="bi bi-cloud-download me-2"></i>Full System Backup</h6>
+                                <p class="text-muted mb-0 small">Generate a complete snapshot of the system database. This includes students, financial records, and settings.</p>
                             </div>
-                            <div class="col-md-4 text-end">
-                                <a asp-action="DownloadBackup" class="btn btn-danger fw-bold rounded-pill px-4">
-                                    <i class="bi bi-download me-2"></i> Download .db Backup
+                            <div class="col-md-3 text-end">
+                                <a asp-action="DownloadBackup" class="btn btn-danger btn-sm fw-bold rounded-pill px-4 py-2">
+                                    Get .db File
                                 </a>
                             </div>
                         </div>
                     </div>
 
-                    <h5 class="fw-bold mb-3 mt-4">System Audit Logs (Last 100)</h5>
-                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                        <table class="table table-sm table-hover align-middle" style="font-size: 0.9rem;">
-                            <thead class="table-light sticky-top">
-                                <tr>
-                                    <th>Time</th>
-                                    <th>User</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var log in Model.RecentLogs)
-                                {
-                                    <tr>
-                                        <td class="text-muted">@log.Timestamp.ToString("g")</td>
-                                        <td class="fw-bold">@(log.User?.Username ?? "Unknown")</td>
-                                        <td>@log.ActionDesc</td>
-                                    </tr>
-                                }
-                                @if(!Model.RecentLogs.Any())
-                                {
-                                    <tr><td colspan="3" class="text-center text-muted">No logs recorded yet.</td></tr>
-                                }
-                            </tbody>
-                        </table>
+                    <div class="form-section-title"><i class="bi bi-clock-history"></i> Recent Activity Logs</div>
+                    <div class="audit-log-feed mt-3" style="max-height: 450px; overflow-y: auto; padding-right: 10px;">
+                        @foreach (var log in Model.RecentLogs)
+                        {
+                            <div class="log-item">
+                                <div class="log-meta">@log.Timestamp.ToString("g")</div>
+                                <div class="log-user">@log.User?.Username</div>
+                                <div class="log-desc">@log.ActionDesc</div>
+                            </div>
+                        }
+                        @if(!Model.RecentLogs.Any())
+                        {
+                            <div class="text-center py-5 text-muted">
+                                <i class="bi bi-journal-x fs-1 opacity-25"></i>
+                                <div class="mt-2">No logs recorded yet.</div>
+                            </div>
+                        }
                     </div>
                 </div>
             }
 
             <!-- Tab 4: Profile Settings -->
             <div class="tab-pane fade @(!isAdmin ? "show active" : "")" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                <h5 class="fw-bold mb-4">Change Password</h5>
-                <form asp-action="UpdateProfile" method="post">
-                    <div class="row g-4 justify-content-center">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label asp-for="ProfileSettings.CurrentPassword" class="form-label fw-semibold text-secondary"></label>
-                                <input asp-for="ProfileSettings.CurrentPassword" type="password" class="form-control bg-light border-1" required />
+                <div class="row justify-content-center py-4">
+                    <div class="col-md-7">
+                        <div class="form-section-title text-center justify-content-center mb-4"><i class="bi bi-shield-lock"></i> Update Your Credentials</div>
+                        
+                        <form asp-action="UpdateProfile" method="post">
+                            <div class="mb-4">
+                                <label asp-for="ProfileSettings.CurrentPassword" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                    <input asp-for="ProfileSettings.CurrentPassword" type="password" class="form-control" placeholder="Current password..." required />
+                                </div>
                                 <span asp-validation-for="ProfileSettings.CurrentPassword" class="text-danger small"></span>
                             </div>
+                            
+                            <hr class="text-muted opacity-25 my-4"/>
+                            
                             <div class="mb-3">
-                                <label asp-for="ProfileSettings.NewPassword" class="form-label fw-semibold text-secondary"></label>
-                                <input asp-for="ProfileSettings.NewPassword" type="password" class="form-control bg-light border-1" required />
+                                <label asp-for="ProfileSettings.NewPassword" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text text-primary"><i class="bi bi-key-fill"></i></span>
+                                    <input asp-for="ProfileSettings.NewPassword" type="password" class="form-control" placeholder="Minimum 6 characters" required />
+                                </div>
                                 <span asp-validation-for="ProfileSettings.NewPassword" class="text-danger small"></span>
                             </div>
-                            <div class="mb-4">
-                                <label asp-for="ProfileSettings.ConfirmPassword" class="form-label fw-semibold text-secondary"></label>
-                                <input asp-for="ProfileSettings.ConfirmPassword" type="password" class="form-control bg-light border-1" required />
+                            <div class="mb-5">
+                                <label asp-for="ProfileSettings.ConfirmPassword" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text text-primary"><i class="bi bi-check2-all"></i></span>
+                                    <input asp-for="ProfileSettings.ConfirmPassword" type="password" class="form-control" placeholder="Repeat new password" required />
+                                </div>
                                 <span asp-validation-for="ProfileSettings.ConfirmPassword" class="text-danger small"></span>
                             </div>
                             <div class="text-center">
-                                <button type="submit" class="btn btn-primary rounded-pill px-5 w-100">Change Password</button>
+                                <button type="submit" class="btn btn-primary-action px-5 w-100 py-3">
+                                    <i class="bi bi-check-circle me-2"></i> Update Password
+                                </button>
                             </div>
-                        </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
 
         </div>
@@ -227,7 +349,7 @@
             // URL içindeki #hash değerine göre sekmeyi aktif et
             const hash = window.location.hash;
             if (hash) {
-                const tabTriggerEl = document.querySelector(`.nav-link[href="${hash}"]`);
+                const tabTriggerEl = document.querySelector(`.nav-link[data-bs-target="${hash}"]`) || document.querySelector(`.nav-link[href="${hash}"]`);
                 if (tabTriggerEl) {
                     const tab = new bootstrap.Tab(tabTriggerEl);
                     tab.show();

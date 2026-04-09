@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 200" width="120" height="200">
+  <!-- Hoodie body -->
+  <rect x="28" y="116" width="64" height="66" rx="14" fill="#2D7D4A"/>
+  <!-- Hoodie pocket -->
+  <rect x="44" y="148" width="32" height="24" rx="8" fill="#245E38"/>
+  <!-- Hood hanging -->
+  <path d="M28 116 Q20 100 34 90 Q40 110 60 112 Q80 110 86 90 Q100 100 92 116 Z" fill="#2D7D4A"/>
+  <!-- Left Arm -->
+  <rect x="16" y="118" width="16" height="44" rx="8" fill="#2D7D4A"/>
+  <!-- Right Arm -->
+  <rect x="88" y="118" width="16" height="44" rx="8" fill="#2D7D4A"/>
+  <!-- Left Hand -->
+  <circle cx="24" cy="164" r="8" fill="#C68642"/>
+  <!-- Right Hand -->
+  <circle cx="96" cy="164" r="8" fill="#C68642"/>
+  <!-- Neck -->
+  <rect x="52" y="100" width="16" height="18" rx="4" fill="#C68642"/>
+  <!-- Head -->
+  <ellipse cx="60" cy="72" rx="28" ry="30" fill="#C68642"/>
+  <!-- Hair -->
+  <ellipse cx="60" cy="48" rx="27" ry="14" fill="#1A0E08"/>
+  <ellipse cx="34" cy="64" rx="7" ry="14" fill="#1A0E08"/>
+  <ellipse cx="86" cy="64" rx="7" ry="14" fill="#1A0E08"/>
+  <!-- Headphones band -->
+  <path d="M34 65 Q60 38 86 65" stroke="#1A0E08" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <!-- Headphone cups -->
+  <ellipse cx="34" cy="68" rx="9" ry="11" fill="#FFD166"/>
+  <ellipse cx="86" cy="68" rx="9" ry="11" fill="#FFD166"/>
+  <!-- Headphone inner -->
+  <ellipse cx="34" cy="68" rx="5.5" ry="7" fill="#1A0E08"/>
+  <ellipse cx="86" cy="68" rx="5.5" ry="7" fill="#1A0E08"/>
+  <!-- Eyes -->
+  <ellipse cx="50" cy="73" rx="5" ry="6" fill="white"/>
+  <ellipse cx="70" cy="73" rx="5" ry="6" fill="white"/>
+  <circle cx="51" cy="74" r="3.5" fill="#1A0E08"/>
+  <circle cx="71" cy="74" r="3.5" fill="#1A0E08"/>
+  <!-- Eye shine -->
+  <circle cx="52.5" cy="72.5" r="1.2" fill="white"/>
+  <circle cx="72.5" cy="72.5" r="1.2" fill="white"/>
+  <!-- Eyebrows -->
+  <path d="M45 66 Q50 63 55 66" stroke="#1A0E08" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <path d="M65 66 Q70 63 75 66" stroke="#1A0E08" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <!-- Smile + teeth -->
+  <path d="M50 85 Q60 95 70 85" stroke="#8B5A2B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Cheek -->
+  <ellipse cx="43" cy="81" rx="6" ry="3.5" fill="#E09050" opacity="0.5"/>
+  <ellipse cx="77" cy="81" rx="6" ry="3.5" fill="#E09050" opacity="0.5"/>
+  <!-- Legs -->
+  <rect x="40" y="178" width="14" height="20" rx="7" fill="#1A1A3E"/>
+  <rect x="66" y="178" width="14" height="20" rx="7" fill="#1A1A3E"/>
+  <!-- Shoes -->
+  <ellipse cx="47" cy="199" rx="9" ry="5" fill="#1A0E08"/>
+  <ellipse cx="73" cy="199" rx="9" ry="5" fill="#1A0E08"/>
+</svg>

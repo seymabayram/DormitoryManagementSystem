@@ -3,50 +3,121 @@
     ViewData["Title"] = "Finances & Dues";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bolder" style="color: #2c3e50;">Financial Tracking</h2>
+<div class="page-header" data-aos="fade-down">
+    <div>
+        <div class="page-title">Financial Tracking
+            <span>Dues, payments & outstanding balances</span>
+        </div>
+    </div>
     @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
     {
-        <a asp-action="Create" class="btn btn-warning text-dark fw-bold rounded-pill px-4 shadow-sm">+ Add Due/Penalty</a>
+        <a asp-action="Create" class="btn-primary-action" style="background:linear-gradient(135deg,#d97706,#f59e0b);">
+            <i class="bi bi-plus-lg"></i> Add Due / Penalty
+        </a>
     }
 </div>
 
-<div class="card border-0 shadow-sm" style="border-radius: 16px; overflow: hidden;">
-    <div class="card-body p-0">
-        <table class="table table-hover align-middle mb-0">
-            <thead style="background: #fff8e1;">
+<!-- Finance Summary Chips -->
+@{
+    var totalPaid   = Model.Where(x => x.IsPaid).Sum(x => x.Amount);
+    var totalUnpaid = Model.Where(x => !x.IsPaid).Sum(x => x.Amount);
+}
+<div class="d-flex gap-3 mb-4 flex-wrap" data-aos="fade-up" data-aos-delay="50">
+    <div style="background:white;border-radius:12px;padding:10px 18px;box-shadow:0 2px 12px rgba(26,31,94,0.07);display:flex;align-items:center;gap:10px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:#f0fdf4;color:#2D7D4A;display:flex;align-items:center;justify-content:center;font-size:1rem;"><i class="bi bi-check-circle-fill"></i></div>
+        <div>
+            <div style="font-size:1.05rem;font-weight:800;color:#166534;">₺@totalPaid.ToString("N0")</div>
+            <div style="font-size:0.72rem;color:#94a3b8;font-weight:600;">COLLECTED</div>
+        </div>
+    </div>
+    <div style="background:white;border-radius:12px;padding:10px 18px;box-shadow:0 2px 12px rgba(26,31,94,0.07);display:flex;align-items:center;gap:10px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:#fff1f2;color:#dc2626;display:flex;align-items:center;justify-content:center;font-size:1rem;"><i class="bi bi-exclamation-circle-fill"></i></div>
+        <div>
+            <div style="font-size:1.05rem;font-weight:800;color:#991b1b;">₺@totalUnpaid.ToString("N0")</div>
+            <div style="font-size:0.72rem;color:#94a3b8;font-weight:600;">OUTSTANDING</div>
+        </div>
+    </div>
+    <div style="background:white;border-radius:12px;padding:10px 18px;box-shadow:0 2px 12px rgba(26,31,94,0.07);display:flex;align-items:center;gap:10px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:#fffbeb;color:#d97706;display:flex;align-items:center;justify-content:center;font-size:1rem;"><i class="bi bi-receipt"></i></div>
+        <div>
+            <div style="font-size:1.05rem;font-weight:800;color:#92400e;">@Model.Count()</div>
+            <div style="font-size:0.72rem;color:#94a3b8;font-weight:600;">TOTAL RECORDS</div>
+        </div>
+    </div>
+</div>
+
+<div class="table-card" data-aos="fade-up" data-aos-delay="100">
+    <div class="table-card-header" style="background:linear-gradient(135deg,#d97706,#f59e0b);">
+        <div class="table-card-title">
+            <i class="bi bi-wallet2"></i> Payment Records
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
                 <tr>
-                    <th class="ps-4 py-3">Student Name</th>
-                    <th class="py-3">Amount</th>
-                    <th class="py-3">Due Date</th>
-                    <th class="py-3">Status</th>
-                    <th class="text-end pe-4 py-3">Action</th>
+                    <th style="padding-left:20px;">Student</th>
+                    <th>Amount</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th style="text-align:right;padding-right:20px;">Action</th>
                 </tr>
             </thead>
             <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="5" style="text-align:center;padding:48px 20px;color:#94a3b8;">
+                            <i class="bi bi-wallet2" style="font-size:2.5rem;display:block;margin-bottom:10px;opacity:0.4;"></i>
+                            No financial records found.
+                        </td>
+                    </tr>
+                }
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td class="ps-4 fw-bold">
-                            @(item.Student?.FullName ?? "Unknown")
+                        <td style="padding-left:20px;">
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <div class="avatar-circle" style="width:34px;height:34px;border-radius:9px;font-size:0.82rem;background:linear-gradient(135deg,#d97706,#f59e0b);">
+                                    @((item.Student?.FullName ?? "?").Substring(0,1).ToUpper())
+                                </div>
+                                <span style="font-weight:700;color:#1A1F5E;">@(item.Student?.FullName ?? "Unknown")</span>
+                            </div>
                         </td>
-                        <td class="fw-bold">
-                            <span class="@(item.IsPaid ? "text-success" : "text-danger")">₺@item.Amount.ToString("N2")</span>
-                        </td>
-                        <td><small class="text-muted">@item.DueDate.ToString("dd MMM yyyy")</small></td>
                         <td>
-                            @if(item.IsPaid) {
-                                <div class="text-success fw-bold"><span class="badge bg-success bg-opacity-25 text-success rounded-pill px-3 py-2">Paid</span></div>
-                            } else {
-                                <div class="text-danger fw-bold"><span class="badge bg-danger bg-opacity-25 text-danger rounded-pill px-3 py-2">Unpaid</span></div>
+                            <span style="font-size:1.05rem;font-weight:800;color:@(item.IsPaid ? "#166534" : "#991b1b");">
+                                ₺@item.Amount.ToString("N2")
+                            </span>
+                        </td>
+                        <td>
+                            <div style="font-size:0.85rem;color:#64748b;">
+                                <i class="bi bi-calendar3 me-1"></i>@item.DueDate.ToString("dd MMM yyyy")
+                            </div>
+                        </td>
+                        <td>
+                            @if (item.IsPaid)
+                            {
+                                <span class="badge-resolved"><i class="bi bi-check-circle-fill me-1"></i>Paid</span>
+                            }
+                            else
+                            {
+                                <span style="background:rgba(220,38,38,0.1);color:#991b1b;font-weight:700;padding:5px 11px;border-radius:20px;font-size:0.78rem;">
+                                    <i class="bi bi-x-circle-fill me-1"></i>Unpaid
+                                </span>
                             }
                         </td>
-                        <td class="text-end pe-4">
+                        <td style="text-align:right;padding-right:20px;">
                             @if (!item.IsPaid && (User.IsInRole("Admin") || User.IsInRole("Staff")))
                             {
                                 <form asp-action="MarkAsPaid" asp-route-id="@item.Id" method="post" style="display:inline;">
-                                    <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold">Mark Paid</button>
+                                    <button type="submit" class="btn-action btn-resolve">
+                                        <i class="bi bi-check-lg"></i> Mark Paid
+                                    </button>
                                 </form>
+                            }
+                            else if (item.IsPaid)
+                            {
+                                <span style="color:#94a3b8;font-size:0.8rem;"><i class="bi bi-check-all"></i> Settled</span>
                             }
                         </td>
                     </tr>

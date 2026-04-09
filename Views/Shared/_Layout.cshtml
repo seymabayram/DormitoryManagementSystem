@@ -4,231 +4,693 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Dormitory Management</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    
+
     <style>
         :root {
-            --sidebar-bg: rgba(255, 255, 255, 0.1);
-            --sidebar-blur: 20px;
-            --sidebar-border: rgba(255, 255, 255, 0.2);
-            --surface-bg: rgba(255, 255, 255, 0.85);
-            --text-main: #2c3e50;
-            --accent-primary: #1cb5e0;
+            --navy:     #1A1F5E;
+            --navy2:    #1e293b;
+            --blue:     #3b82f6;
+            --blue-lt:  #60a5fa;
+            --gold:     #FFD166;
+            --green:    #2D7D4A;
+            --sidebar-w: 264px;
+            --surface:  #f8faff;
+            --border:   #e2e8f0;
         }
+
+        *, *::before, *::after { box-sizing: border-box; }
 
         body {
             font-family: 'Outfit', sans-serif;
-            background: @(ViewData["IsHomePage"] != null ? "#0f1a2e" : "linear-gradient(135deg, #f6f8fd 0%, #f1f5f9 100%)");
-            background-attachment: fixed;
-            color: @(ViewData["IsHomePage"] != null ? "#eee" : "#2c3e50");
+            background: #f8faff; /* Lighter background for internal pages */
+            color: #1e293b;
             overflow-x: hidden;
             min-height: 100vh;
+            margin: 0;
+            transition: background 0.5s ease;
         }
-        
-        /* Premium Glass Sidebar */
+        body.is-home {
+            background: #020617; /* Dark for home stars */
+            color: #f1f5f9;
+        }
+
+        /* ========= SIDEBAR ========= */
         .sidebar {
-            min-width: 260px;
-            max-width: 260px;
-            min-height: 100vh;
-            background: @(ViewData["IsHomePage"] != null ? "rgba(255, 255, 255, 0.05)" : "rgba(255, 255, 255, 0.8)");
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 4px 0 25px rgba(0,0,0,0.05);
             position: fixed;
             top: 0; left: 0;
-            padding-top: 30px;
+            width: var(--sidebar-w);
+            min-height: 100vh;
+            background: var(--navy);
             z-index: 1000;
             display: flex;
             flex-direction: column;
+            transition: transform 0.3s ease;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.1);
         }
 
+        /* Brand */
         .sidebar-brand {
-            font-weight: 800;
-            background: linear-gradient(45deg, #4fc3f7, #2196f3);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 1.6rem;
-            text-align: center;
-            margin-bottom: 2rem;
-            text-decoration: none;
-        }
-
-        .nav-item { margin: 5px 15px; list-style: none; }
-        .nav-link {
-            font-weight: 600;
-            color: @(ViewData["IsHomePage"] != null ? "#a3b1c6" : "#6c7a89") !important;
-            padding: 12px 20px;
-            border-radius: 12px;
-            transition: all 0.3s ease;
             display: flex;
             align-items: center;
+            gap: 12px;
+            padding: 24px 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            text-decoration: none;
         }
-        .nav-link i { font-size: 1.2rem; margin-right: 12px; }
-        .nav-link:hover, .nav-link.active {
-            background: rgba(255, 255, 255, 0.1);
-            color: #4fc3f7 !important;
-            transform: translateX(5px);
+        .sidebar-brand:hover { text-decoration: none; }
+        .brand-logo {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+        .brand-text {
+            font-weight: 800;
+            font-size: 1rem;
+            color: white;
+            letter-spacing: -0.2px;
+            line-height: 1.2;
+        }
+        .brand-sub {
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: rgba(255,255,255,0.45);
         }
 
-        /* Content Area Setup */
-        .content-area {
-            width: calc(100% - 260px);
-            margin-left: 260px;
-            padding: 40px;
+        /* Nav */
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 12px;
+            list-style: none;
+            margin: 0;
+        }
+
+        .nav-section-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.32);
+            padding: 14px 10px 6px;
+        }
+
+        .nav-item { margin: 2px 0; }
+        .sidebar-nav .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 11px 14px;
+            border-radius: 12px;
+            color: rgba(255,255,255,0.62) !important;
+            font-weight: 600;
+            font-size: 0.92rem;
+            text-decoration: none;
+            transition: all 0.25s ease;
             position: relative;
-            z-index: 2;
+        }
+        .sidebar-nav .nav-link i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .sidebar-nav .nav-link:hover {
+            background: rgba(255,255,255,0.08);
+            color: white !important;
+            transform: translateX(4px);
+        }
+        .sidebar-nav .nav-link.active {
+            background: rgba(255,209,102,0.15);
+            color: var(--gold) !important;
+            border-left: 3px solid var(--gold);
+        }
+        .sidebar-nav .nav-link.active i { color: var(--gold); }
+
+        /* Badge on nav */
+        .nav-badge {
+            margin-left: auto;
+            background: var(--gold);
+            color: var(--navy);
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 20px;
         }
 
-        .page-wrapper {
+        /* User footer */
+        .sidebar-footer {
+            padding: 16px 14px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+        .sidebar-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .user-avatar {
+            width: 38px; height: 38px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--blue), var(--blue-lt));
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 0.95rem; color: white;
+            flex-shrink: 0;
+        }
+        .user-name  { font-weight: 700; font-size: 0.88rem; color: white; }
+        .user-role  {
+            font-size: 0.7rem; font-weight: 600;
+            padding: 2px 8px; border-radius: 6px;
+            display: inline-block; margin-top: 2px;
+        }
+        .role-admin   { background: rgba(255,209,102,0.2); color: var(--gold); }
+        .role-staff   { background: rgba(45,125,74,0.3);   color: #5DD68A; }
+        .role-student { background: rgba(58,107,199,0.3);  color: #8AB4F8; }
+
+        .btn-logout {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%;
+            background: rgba(239,68,68,0.12);
+            border: 1px solid rgba(239,68,68,0.25);
+            border-radius: 10px;
+            color: #f87171;
+            font-size: 0.87rem; font-weight: 700;
+            padding: 9px;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+        .btn-logout:hover {
+            background: rgba(239,68,68,0.22);
+            color: #fca5a5;
+            transform: translateY(-1px);
+        }
+
+        /* ========= CONTENT ========= */
+        .content-area {
+            margin-left: var(--sidebar-w);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
         }
 
-        main[role="main"] {
-            flex-grow: 1;
+        /* Top Bar */
+        .topbar {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            padding: 14px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 10px rgba(0,0,0,0.03);
         }
-
-        .page-transition { animation: fadeInDown 0.6s cubic-bezier(0.25, 0.8, 0.25, 1); }
-
-        @@keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+        .topbar-title {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--navy);
+            letter-spacing: -0.3px;
         }
-
-        .btn { border-radius: 12px; font-weight: 600; transition: all 0.3s ease; }
-        .btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
-        
-        .table { 
-            background: rgba(255, 255, 255, 0.05); 
-            backdrop-filter: blur(10px); 
-            border-radius: 15px; 
-            overflow: hidden; 
-            margin-bottom: 0;
-            color: inherit;
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        
-        .card { 
-            transition: all 0.4s ease; 
-            border: 1px solid rgba(255,255,255,0.1); 
-            background: rgba(255, 255, 255, 0.07); 
-            backdrop-filter: blur(15px); 
-            color: inherit;
-        }
-        .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
-
-        footer { 
-            margin-top: auto;  /* Flex Container içerisinde her zaman en alta iter */
-            background: rgba(255,255,255,0.05); 
-            backdrop-filter: blur(10px); 
-            color: #64748b; 
-            padding: 25px 0; 
-            border-top: 1px solid rgba(255,255,255,0.1); 
-            border-radius: 20px; 
+        .topbar-time {
+            font-size: 0.82rem;
+            color: #94a3b8;
             font-weight: 500;
+        }
+
+        /* Main */
+        main {
+            flex: 1;
+            padding: 28px 32px;
+        }
+
+        /* Page Transition */
+        .page-fade { animation: pageFade 0.45s ease forwards; }
+        @@keyframes pageFade {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Alerts */
+        .alert-success-custom {
+            background: linear-gradient(135deg, rgba(45,125,74,0.12), rgba(45,125,74,0.06));
+            border: 1px solid rgba(45,125,74,0.25);
+            border-radius: 12px;
+            color: #166534;
+            padding: 12px 18px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .alert-danger-custom {
+            background: linear-gradient(135deg, rgba(220,38,38,0.1), rgba(220,38,38,0.04));
+            border: 1px solid rgba(220,38,38,0.22);
+            border-radius: 12px;
+            color: #991b1b;
+            padding: 12px 18px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* ==== GLOBAL COMPONENT STYLES ==== */
+        /* Premium Table Card */
+        .table-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(26,31,94,0.08);
+            overflow: hidden;
+            border: 1px solid rgba(26,31,94,0.06);
+        }
+        .table-card-header {
+            background: linear-gradient(135deg, #1A3A8A, #3A6BC7);
+            padding: 16px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .table-card-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .table-card-title i { font-size: 1.1rem; opacity: 0.85; }
+        .table { margin-bottom: 0; color: #1e293b; }
+        .table thead th {
+            background: #f8faff;
+            color: #475569;
+            font-weight: 700;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            border-bottom: 2px solid #e2e8f0;
+            padding: 13px 16px;
+            white-space: nowrap;
+        }
+        .table tbody td {
+            padding: 13px 16px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.92rem;
+        }
+        .table tbody tr:last-child td { border-bottom: none; }
+        .table tbody tr:hover { background: #fafbff; }
+
+        /* Badges */
+        .badge-active   { background: rgba(45,125,74,0.12);  color: #166534;  font-weight: 700; padding: 5px 11px; border-radius: 20px; font-size: 0.78rem; }
+        .badge-expired  { background: rgba(100,116,139,0.12); color: #475569; font-weight: 700; padding: 5px 11px; border-radius: 20px; font-size: 0.78rem; }
+        .badge-pending  { background: rgba(245,158,11,0.12);  color: #92400e; font-weight: 700; padding: 5px 11px; border-radius: 20px; font-size: 0.78rem; }
+        .badge-resolved { background: rgba(45,125,74,0.12);   color: #166534; font-weight: 700; padding: 5px 11px; border-radius: 20px; font-size: 0.78rem; }
+        .badge-room     { background: #f0f4ff; color: var(--navy2); font-weight: 700; padding: 5px 11px; border-radius: 8px; font-size: 0.82rem; }
+
+        /* Action Buttons */
+        .btn-action {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-action:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+        .btn-view    { background: #eff6ff; color: #1d4ed8; }
+        .btn-edit    { background: #f0fdf4; color: #166534; }
+        .btn-delete  { background: #fff1f2; color: #be123c; }
+        .btn-resolve { background: #f0fdf4; color: #166534; }
+        .btn-primary-action {
+            background: linear-gradient(135deg, var(--navy2), var(--blue));
+            color: white;
+            padding: 9px 18px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 14px rgba(26,58,138,0.25);
+        }
+        .btn-primary-action:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(26,58,138,0.35); color: white; }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .page-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--navy);
+            letter-spacing: -0.4px;
+        }
+        .page-title span {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: #94a3b8;
+            letter-spacing: 0;
+            margin-top: 2px;
+        }
+
+        /* Avatar Initials */
+        .avatar-circle {
+            width: 38px; height: 38px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 0.9rem; color: white;
+            flex-shrink: 0;
+        }
+
+        /* Footer */
+        footer {
+            background: white;
+            border-top: 1px solid var(--border);
+            padding: 18px 32px;
+            color: #64748b;
+            font-size: 0.83rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        footer a { color: #94a3b8; text-decoration: none; }
+        footer a:hover { color: var(--navy2); }
+
+        /* Mobile sidebar toggle */
+        .sidebar-toggle {
+            display: none;
+            background: none; border: none;
+            color: var(--navy); font-size: 1.4rem;
+            cursor: pointer; padding: 4px;
+        }
+
+        @@media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .content-area { margin-left: 0; }
+            .sidebar-toggle { display: block; }
+            main { padding: 18px 16px; }
+            .topbar { padding: 12px 16px; }
+        }
+        /* Global Atmosphere Effects */
+        #globalStarCanvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2;
+            pointer-events: none;
+        }
+        .global-nebula {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, rgba(74, 222, 128, 0.06) 0%, transparent 40%),
+                        radial-gradient(circle at 50% 10%, rgba(168, 85, 247, 0.05) 0%, transparent 50%);
+            z-index: -1;
+            pointer-events: none;
         }
     </style>
 </head>
-<body>
-    @if (User.Identity?.IsAuthenticated == true)
+@{
+    bool isHomePage = ViewData["IsHomePage"] as bool? ?? false;
+    bool isAuthenticated = User.Identity?.IsAuthenticated == true;
+}
+<body class="@(isHomePage ? "is-home" : "")">
+    @if (isHomePage)
     {
-        <div class="sidebar">
-            <a class="sidebar-brand" href="javascript:void(0);" style="cursor: default;">
-                <img src="~/assets/image.png" style="height: 55px; margin-right: 12px; vertical-align: middle;" alt="Logo" /> Dormitory
+        <canvas id="globalStarCanvas"></canvas>
+        <div class="global-nebula"></div>
+    }
+
+    @if (isAuthenticated && !isHomePage)
+    {
+        <!-- ===== SIDEBAR ===== -->
+        <nav class="sidebar" id="sidebar">
+            <a class="sidebar-brand" href="javascript:void(0);" style="cursor:default;">
+                <svg class="brand-logo" viewBox="0 0 54 54" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="54" height="54" rx="13" fill="#1A1F5E"/>
+                    <rect x="10" y="28" width="34" height="20" rx="3" fill="#3A6BC7"/>
+                    <polygon points="7,30 27,14 47,30" fill="#5B72FF"/>
+                    <circle cx="27" cy="14" r="3.5" fill="#FFD166"/>
+                    <rect x="14" y="32" width="7" height="7" rx="2" fill="#7B9FFF"/>
+                    <rect x="24" y="32" width="6" height="7" rx="2" fill="#7B9FFF"/>
+                    <rect x="33" y="32" width="7" height="7" rx="2" fill="#7B9FFF"/>
+                    <rect x="22" y="40" width="10" height="8" rx="2" fill="#FFD166"/>
+                </svg>
+                <div>
+                    <div class="brand-text">DormSystem</div>
+                    <div class="brand-sub">Management Portal</div>
+                </div>
             </a>
-            
-            <ul class="p-0 flex-grow-1">
+
+            <ul class="sidebar-nav">
+                <li class="nav-section-label">Main</li>
                 <li class="nav-item">
-                    <a class="nav-link" asp-controller="Home" asp-action="Dashboard"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")"
+                       asp-controller="Home" asp-action="Dashboard">
+                        <i class="bi bi-grid-1x2-fill"></i> Dashboard
+                    </a>
                 </li>
+
                 @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
                 {
+                    <li class="nav-section-label">Management</li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Rooms" asp-action="Index"><i class="bi bi-door-open-fill"></i> Rooms</a>
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Rooms" ? "active" : "")"
+                           asp-controller="Rooms" asp-action="Index">
+                            <i class="bi bi-door-open-fill"></i> Rooms
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Students" asp-action="Index"><i class="bi bi-person-badge-fill"></i> Students</a>
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Students" ? "active" : "")"
+                           asp-controller="Students" asp-action="Index">
+                            <i class="bi bi-person-badge-fill"></i> Students
+                        </a>
                     </li>
                 }
+
+                <li class="nav-section-label">Services</li>
                 <li class="nav-item">
-                    <a class="nav-link" asp-controller="Dues" asp-action="Index"><i class="bi bi-wallet-fill"></i> Finances</a>
+                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dues" ? "active" : "")"
+                       asp-controller="Dues" asp-action="Index">
+                        <i class="bi bi-wallet-fill"></i> Finances
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" asp-controller="Maintenance" asp-action="Index"><i class="bi bi-tools"></i> Maintenance</a>
+                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Maintenance" ? "active" : "")"
+                       asp-controller="Maintenance" asp-action="Index">
+                        <i class="bi bi-tools"></i> Maintenance
+                    </a>
                 </li>
+
                 @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
                 {
+                    <li class="nav-section-label">Admin</li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Reports" asp-action="Index"><i class="bi bi-bar-chart-fill"></i> Reports</a>
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Reports" ? "active" : "")"
+                           asp-controller="Reports" asp-action="Index">
+                            <i class="bi bi-bar-chart-fill"></i> Reports
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Settings" asp-action="Index"><i class="bi bi-gear-fill"></i> Settings</a>
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Settings" ? "active" : "")"
+                           asp-controller="Settings" asp-action="Index">
+                            <i class="bi bi-gear-fill"></i> Settings
+                        </a>
                     </li>
                 }
             </ul>
 
-            <div class="mt-auto p-4 border-top opacity-75 text-center">
-                <strong class="d-block mb-2 text-success">@User.Identity?.Name</strong>
-                <a class="btn btn-outline-danger btn-sm rounded-pill w-100" asp-controller="Account" asp-action="Logout">Logout</a>
+            <div class="sidebar-footer">
+                <div class="sidebar-user">
+                    <div class="user-avatar">
+                        @(User.Identity?.Name?.Substring(0,1).ToUpper() ?? "?")
+                    </div>
+                    <div>
+                        <div class="user-name">@User.Identity?.Name</div>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <span class="user-role role-admin"><i class="bi bi-shield-fill-check me-1"></i>Admin</span>
+                        }
+                        else if (User.IsInRole("Staff"))
+                        {
+                            <span class="user-role role-staff"><i class="bi bi-person-badge me-1"></i>Staff</span>
+                        }
+                        else
+                        {
+                            <span class="user-role role-student"><i class="bi bi-mortarboard me-1"></i>Student</span>
+                        }
+                    </div>
+                </div>
+                <a class="btn-logout" asp-controller="Account" asp-action="Logout">
+                    <i class="bi bi-box-arrow-left"></i> Logout
+                </a>
             </div>
-        </div>
+        </nav>
     }
 
-    <div class="@(User.Identity?.IsAuthenticated == true ? "content-area" : "container-fluid") page-transition page-wrapper" style="@(User.Identity?.IsAuthenticated != true ? "padding-top: 80px;" : "")">
-        <main role="main" class="pb-5" data-aos="fade-in" data-aos-duration="800">
+    <!-- ===== CONTENT ===== -->
+    <div class="@(isAuthenticated && !isHomePage ? "content-area" : "")">
+
+        @if (isAuthenticated && !isHomePage)
+        {
+            <div class="topbar">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <span class="topbar-title">@ViewData["Title"]</span>
+                </div>
+                <div class="topbar-right">
+                    <span class="topbar-time" id="liveClock"></span>
+                    <div class="user-avatar" style="width:34px;height:34px;font-size:0.82rem;border-radius:8px;">
+                        @(User.Identity?.Name?.Substring(0, 1).ToUpper() ?? "?")
+                    </div>
+                </div>
+            </div>
+        }
+
+        <main class="page-fade" data-aos="fade-in" data-aos-duration="600">
             @if (TempData["Success"] != null)
             {
-                <div class="alert alert-success alert-dismissible fade show rounded-pill shadow-sm border-0 mb-4 px-4" role="alert">
-                    <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <div class="alert-success-custom d-flex align-items-center gap-2 mb-4" role="alert">
+                    <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
                 </div>
             }
             @if (TempData["Error"] != null)
             {
-                <div class="alert alert-danger alert-dismissible fade show rounded-pill shadow-sm border-0 mb-4 px-4" role="alert">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Error"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <div class="alert-danger-custom d-flex align-items-center gap-2 mb-4" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i> @TempData["Error"]
                 </div>
             }
 
             @RenderBody()
         </main>
-        
-        <footer class="text-center shadow-sm" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-md-6 text-md-start mb-3 mb-md-0 d-flex align-items-center justify-content-center justify-content-md-start">
-                        <img src="~/assets/image.png" alt="Logo" style="height: 40px; margin-right: 10px;" />
-                        <span class="fs-5 fw-bold" style="background: linear-gradient(45deg, #1cb5e0, #000046); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Dormitory Management System</span> <span class="ms-1">&copy; @DateTime.Now.Year</span>
-                    </div>
-                    <div class="col-md-6 text-md-end">
-                        <a href="#" class="text-decoration-none text-secondary mx-2 hover-text-primary"><i class="bi bi-shield-check"></i> Privacy Policy</a>
-                        <a href="#" class="text-decoration-none text-secondary mx-2 hover-text-primary"><i class="bi bi-envelope"></i> Contact Support</a>
-                    </div>
+
+        @if (isAuthenticated && !isHomePage)
+        {
+            <footer>
+                <div class="d-flex align-items-center gap-2">
+                    <svg width="22" height="22" viewBox="0 0 54 54" xmlns="http://www.w3.org/2000/svg" style="border-radius:6px; flex-shrink:0;">
+                        <rect width="54" height="54" rx="13" fill="#1A1F5E"/>
+                        <rect x="10" y="28" width="34" height="20" rx="3" fill="#3A6BC7"/>
+                        <polygon points="7,30 27,14 47,30" fill="#5B72FF"/>
+                        <circle cx="27" cy="14" r="3.5" fill="#FFD166"/>
+                        <rect x="14" y="32" width="7" height="7" rx="2" fill="#7B9FFF"/>
+                        <rect x="33" y="32" width="7" height="7" rx="2" fill="#7B9FFF"/>
+                        <rect x="22" y="40" width="10" height="8" rx="2" fill="#FFD166"/>
+                    </svg>
+                    <span>Dormitory Management System &copy; @DateTime.Now.Year</span>
                 </div>
-            </div>
-        </footer>
+                <div class="d-flex gap-3">
+                    <a href="#"><i class="bi bi-shield-check me-1"></i>Privacy</a>
+                    <a href="#"><i class="bi bi-envelope me-1"></i>Support</a>
+                </div>
+            </footer>
+        }
     </div>
+
+    <!-- Mobile overlay -->
+    <div id="sidebarOverlay" onclick="toggleSidebar()"
+         style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:999;"></div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        AOS.init({
-            once: false, /* allow animations to occur every scroll */
-            mirror: true,
-            offset: 50,
-            duration: 600,
-            easing: 'ease-out-cubic'
-        });
+        AOS.init({ once: true, offset: 40, duration: 550, easing: 'ease-out-cubic' });
+
+        // Live clock
+        function updateClock() {
+            const el = document.getElementById('liveClock');
+            if (el) {
+                const now = new Date();
+                el.textContent = now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+            }
+        }
+        updateClock();
+        setInterval(updateClock, 30000);
+
+        // Mobile sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (!sidebar) return;
+            sidebar.classList.toggle('open');
+            overlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+        }
+
+        // Active nav highlight on page load
+        (function () {
+            const links = document.querySelectorAll('.nav-link');
+            const path = window.location.pathname;
+            links.forEach(link => {
+                if (link.href && link.href.trim() !== '#' && path.startsWith(new URL(link.href).pathname) && new URL(link.href).pathname !== '/') {
+                    link.classList.add('active');
+                }
+            });
+        })();
+        @if (isHomePage) {
+            @: // Global Star Field Engine
+            @: const gCanvas = document.getElementById('globalStarCanvas');
+            @: if (gCanvas) {
+            @:     const gCtx = gCanvas.getContext('2d');
+            @:     let gStars = [];
+            @:     function initGlobalStars() {
+            @:         gCanvas.width = window.innerWidth;
+            @:         gCanvas.height = window.innerHeight;
+            @:         gStars = [];
+            @:         for (let i = 0; i < 200; i++) {
+            @:             gStars.push({
+            @:                 x: Math.random() * gCanvas.width,
+            @:                 y: Math.random() * gCanvas.height,
+            @:                 size: Math.random() * 1.8 + 0.2,
+            @:                 opacity: Math.random() * 0.7,
+            @:                 speed: Math.random() * 0.08 + 0.03
+            @:             });
+            @:         }
+            @:     }
+            @:     function animateGlobalStars() {
+            @:         gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+            @:         gStars.forEach(s => {
+            @:             gCtx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
+            @:             gCtx.beginPath();
+            @:             gCtx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+            @:             gCtx.fill();
+            @:             s.y -= s.speed;
+            @:             if (s.y < 0) s.y = gCanvas.height;
+            @:         });
+            @:         requestAnimationFrame(animateGlobalStars);
+            @:     }
+            @:     window.addEventListener('resize', initGlobalStars);
+            @:     initGlobalStars();
+            @:     animateGlobalStars();
+            @: }
+        }
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
