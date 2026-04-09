@@ -38,6 +38,12 @@ namespace DormitoryManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create([Bind("RoomNumber,Capacity")] Room room)
         {
+            // Check for existing room number
+            if (_context.Rooms.Any(r => r.RoomNumber == room.RoomNumber))
+            {
+                ModelState.AddModelError("RoomNumber", "This room number is already registered in the system.");
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(room);

@@ -63,7 +63,7 @@ namespace DormitoryManagementSystem.Controllers
             // Check TC uniqueness
             var tcExists = await _context.Students.AnyAsync(s => s.NationalId == student.NationalId);
             if (tcExists)
-                ModelState.AddModelError("NationalId", "A student with this TC number already exists.");
+                ModelState.AddModelError("NationalId", "This student (National ID) is already registered in the system.");
 
             ModelState.Remove("User");
             ModelState.Remove("Room");
