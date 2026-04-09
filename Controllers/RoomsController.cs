@@ -31,7 +31,8 @@ namespace DormitoryManagementSystem.Controllers
 
             int totalItems = await query.CountAsync();
             var rooms = await query
-                .OrderBy(r => r.RoomNumber)
+                .OrderBy(r => r.RoomNumber.Length)
+                .ThenBy(r => r.RoomNumber)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
