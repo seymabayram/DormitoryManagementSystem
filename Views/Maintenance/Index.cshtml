@@ -9,9 +9,12 @@
             <span>Service & repair request tracking</span>
         </div>
     </div>
-    <a asp-action="Create" class="btn-primary-action">
-        <i class="bi bi-plus-lg"></i> File New Ticket
-    </a>
+    @if (!User.IsInRole("Staff"))
+    {
+        <a asp-action="Create" class="btn-primary-action">
+            <i class="bi bi-plus-lg"></i> File New Ticket
+        </a>
+    }
 </div>
 
 <!-- Status Summary -->
