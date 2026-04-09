@@ -26,7 +26,7 @@ namespace DormitoryManagementSystem.Controllers
         }
 
         // MISSION 2: Show the form to add a new room
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Staff")]
         public IActionResult Create()
         {
             return View();
@@ -34,7 +34,7 @@ namespace DormitoryManagementSystem.Controllers
 
         // MISSION 3: Save the room that the user submitted via the form
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Staff")]
         [ValidateAntiForgeryToken]
         public IActionResult Create([Bind("RoomNumber,Capacity")] Room room)
         {
@@ -48,7 +48,7 @@ namespace DormitoryManagementSystem.Controllers
         }
 
         // MISSION 4: Show the room to edit
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Staff")]
         public IActionResult Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -61,7 +61,7 @@ namespace DormitoryManagementSystem.Controllers
 
         // MISSION 5: Save changes to the room
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Staff")]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, [Bind("Id,RoomNumber,Capacity")] Room room)
         {
@@ -78,7 +78,7 @@ namespace DormitoryManagementSystem.Controllers
 
         // MISSION 6: Delete a room
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Staff")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {

@@ -9,7 +9,7 @@
             <span>Configure dormitory room inventory</span>
         </div>
     </div>
-    @if (User.IsInRole("Admin"))
+    @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
     {
         <a asp-controller="Rooms" asp-action="Create" class="btn-primary-action">
             <i class="bi bi-plus-lg"></i> Add New Room
@@ -48,7 +48,7 @@
                     <th style="padding-left:20px;">#</th>
                     <th>Room Number</th>
                     <th>Bed Capacity</th>
-                    @if (User.IsInRole("Admin"))
+                    @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
                     {
                         <th style="text-align:right; padding-right:20px;">Actions</th>
                     }
@@ -86,7 +86,7 @@
                                 <span class="badge-room" style="margin-left:4px;">@room.Capacity Beds</span>
                             </div>
                         </td>
-                        @if (User.IsInRole("Admin"))
+                        @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
                         {
                             <td style="text-align:right;padding-right:20px;">
                                 <div style="display:flex;gap:6px;justify-content:flex-end;">
