@@ -58,7 +58,7 @@
                     <th>Room</th>
                     <th>Membership Period</th>
                     <th>Status</th>
-                    @if (User.IsInRole("Admin"))
+                    @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
                     {
                         <th style="text-align:right; padding-right:20px;">Actions</th>
                     }
@@ -109,7 +109,7 @@
                                 <span class="badge-expired">Expired</span>
                             }
                         </td>
-                        @if (User.IsInRole("Admin"))
+                        @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
                         {
                             <td style="text-align:right; padding-right:20px;">
                                 <div style="display:flex; gap:6px; justify-content:flex-end;">
