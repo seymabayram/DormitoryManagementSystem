@@ -19,7 +19,7 @@ namespace DormitoryManagementSystem.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var query = _context.DuesAndPenalties.Include(d => d.Student).ThenInclude(s => s.Room).AsQueryable();
+            var query = _context.DuesAndPenalties.AsNoTracking().Include(d => d.Student).ThenInclude(s => s!.Room).AsQueryable();
             if (User.IsInRole("Student"))
             {
                 var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

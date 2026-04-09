@@ -108,6 +108,7 @@ namespace DormitoryManagementSystem.Controllers
         public async Task<IActionResult> ExportExcel(string type = "consolidated")
         {
             var query = _context.DuesAndPenalties!
+                .AsNoTracking()
                 .Include(d => d.Student)
                     .ThenInclude(s => s!.Room);
 
@@ -211,8 +212,8 @@ namespace DormitoryManagementSystem.Controllers
             ViewBag.CollectionRate   = rate;
             
             // Occupancy
-            var totalCapacity = await _context.Rooms.SumAsync(r => r.Capacity);
-            var occupiedBeds  = await _context.Students.CountAsync(s => s.RoomId != null);
+            var totalCapacity = await _context.Rooms.AsNoTracking().SumAsync(r => r.Capacity);
+            var occupiedBeds  = await _context.Students.AsNoTracking().CountAsync(s => s.RoomId > 0);
             ViewBag.TotalCapacity = totalCapacity;
             ViewBag.OccupiedBeds  = occupiedBeds;
             ViewBag.OccupancyRate = totalCapacity > 0 ? Math.Round((double)occupiedBeds / totalCapacity * 100, 1) : 0;

@@ -17,10 +17,10 @@ namespace DormitoryManagementSystem.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(int page = 1, string search = null)
+        public async Task<IActionResult> Index(int page = 1, string? search = null)
         {
             int pageSize = 10;
-            var query = _context.Students.Include(s => s.Room).AsQueryable();
+            var query = _context.Students.AsNoTracking().Include(s => s.Room).AsQueryable();
             
             if (User.IsInRole("Student"))
             {

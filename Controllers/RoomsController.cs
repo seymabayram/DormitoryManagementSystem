@@ -19,10 +19,10 @@ namespace DormitoryManagementSystem.Controllers
         }
 
         // MISSION 1: Send the list of rooms to the screen with Paging & Search support
-        public async Task<IActionResult> Index(int page = 1, string search = null)
+        public async Task<IActionResult> Index(int page = 1, string? search = null)
         {
             int pageSize = 10;
-            var query = _context.Rooms.AsQueryable();
+            var query = _context.Rooms.AsNoTracking().AsQueryable();
 
             if (!string.IsNullOrEmpty(search))
             {

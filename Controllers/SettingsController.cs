@@ -37,12 +37,13 @@ namespace DormitoryManagementSystem.Controllers
                 // Load User Lists (Admins & Staff)
                 if (isAdmin)
                 {
-                    viewModel.AdminList = await _context.Admins.Include(a => a.User).ThenInclude(u => u.Role).ToListAsync();
-                    viewModel.StaffList = await _context.Staffs.Include(s => s.User).ThenInclude(u => u.Role).ToListAsync();
+                    viewModel.AdminList = await _context.Admins.AsNoTracking().Include(a => a.User!).ThenInclude(u => u.Role).ToListAsync();
+                    viewModel.StaffList = await _context.Staffs.AsNoTracking().Include(s => s.User!).ThenInclude(u => u.Role).ToListAsync();
                 }
 
                 // Load Audit Logs (last 100)
                 viewModel.RecentLogs = await _context.AuditLogs
+                    .AsNoTracking()
                     .Include(a => a.User)
                     .OrderByDescending(a => a.Timestamp)
                     .Take(100)
