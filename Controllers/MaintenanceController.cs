@@ -77,7 +77,7 @@ namespace DormitoryManagementSystem.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin,Staff")]
+        [Authorize(Roles = "Staff")]
         public async Task<IActionResult> Resolve(int id)
         {
             var ticket = await _context.MaintenanceTickets.FindAsync(id);

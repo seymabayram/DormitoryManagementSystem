@@ -57,14 +57,17 @@
                     <th>Room</th>
                     <th>Issue</th>
                     <th>Status</th>
-                    <th style="text-align:right;padding-right:20px;">Action</th>
+                    @if (!User.IsInRole("Admin"))
+                    {
+                        <th style="text-align:right;padding-right:20px;">Action</th>
+                    }
                 </tr>
             </thead>
             <tbody>
                 @if (!Model.Any())
                 {
                     <tr>
-                        <td colspan="6" style="text-align:center;padding:48px 20px;color:#94a3b8;">
+                        <td colspan="@(User.IsInRole("Admin") ? 5 : 6)" style="text-align:center;padding:48px 20px;color:#94a3b8;">
                             <i class="bi bi-tools" style="font-size:2.5rem;display:block;margin-bottom:10px;opacity:0.4;"></i>
                             No maintenance tickets found.
                         </td>
@@ -106,20 +109,23 @@
                                 </span>
                             }
                         </td>
-                        <td style="text-align:right;padding-right:20px;">
-                            @if (!item.IsResolved && (User.IsInRole("Admin") || User.IsInRole("Staff")))
-                            {
-                                <form asp-action="Resolve" asp-route-id="@item.Id" method="post" style="display:inline;">
-                                    <button type="submit" class="btn-action btn-resolve">
-                                        <i class="bi bi-check-lg"></i> Mark Resolved
-                                    </button>
-                                </form>
-                            }
-                            else if (item.IsResolved)
-                            {
-                                <span style="color:#94a3b8;font-size:0.8rem;"><i class="bi bi-check-all"></i> Done</span>
-                            }
-                        </td>
+                        @if (!User.IsInRole("Admin"))
+                        {
+                            <td style="text-align:right;padding-right:20px;">
+                                @if (!item.IsResolved && User.IsInRole("Staff"))
+                                {
+                                    <form asp-action="Resolve" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                        <button type="submit" class="btn-action btn-resolve">
+                                            <i class="bi bi-check-lg"></i> Mark Resolved
+                                        </button>
+                                    </form>
+                                }
+                                else if (item.IsResolved)
+                                {
+                                    <span style="color:#94a3b8;font-size:0.8rem;"><i class="bi bi-check-all"></i> Done</span>
+                                }
+                            </td>
+                        }
                     </tr>
                 }
             </tbody>
