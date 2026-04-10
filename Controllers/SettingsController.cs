@@ -69,6 +69,24 @@ namespace DormitoryManagementSystem.Controllers
                     }
                 }
             }
+            else if (User.IsInRole("Staff"))
+            {
+                var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (int.TryParse(userIdStr, out int userId))
+                {
+                    var staff = await _context.Staffs.FirstOrDefaultAsync(s => s.UserId == userId);
+                    if (staff != null)
+                    {
+                        viewModel.StudentInfo = new StudentInfoViewModel
+                        {
+                            Id = staff.Id,
+                            Name = staff.Name,
+                            Surname = staff.Surname,
+                            Email = staff.Email
+                        };
+                    }
+                }
+            }
 
             return View(viewModel);
         }

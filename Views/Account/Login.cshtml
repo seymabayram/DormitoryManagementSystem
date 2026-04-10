@@ -334,13 +334,13 @@
                     <!-- Role Selector -->
                     <input type="hidden" asp-for="SelectedRole" id="selectedRoleInput" />
                     <div class="role-tabs mb-4" id="roleTabs">
-                        <button type="button" class="role-tab" id="tab-Admin" data-role="Admin" onclick="selectRole(this,'Admin')">
+                        <button type="button" class="role-tab" id="tab-Admin" data-role="Admin" onclick="selectRole(this,'Admin', true)">
                             <i class="bi bi-shield-fill-check"></i> Admin
                         </button>
-                        <button type="button" class="role-tab" id="tab-Staff" data-role="Staff" onclick="selectRole(this,'Staff')">
+                        <button type="button" class="role-tab" id="tab-Staff" data-role="Staff" onclick="selectRole(this,'Staff', true)">
                             <i class="bi bi-person-badge-fill"></i> Staff
                         </button>
-                        <button type="button" class="role-tab" id="tab-Student" data-role="Student" onclick="selectRole(this,'Student')">
+                        <button type="button" class="role-tab" id="tab-Student" data-role="Student" onclick="selectRole(this,'Student', true)">
                             <i class="bi bi-mortarboard-fill"></i> Student
                         </button>
                     </div>
@@ -419,11 +419,19 @@
             'Student': 'active-student'
         };
 
-        function selectRole(btn, role) {
+        function selectRole(btn, role, fromUserClick = false) {
             document.querySelectorAll('.role-tab').forEach(t => {
                 t.classList.remove('active-admin', 'active-staff', 'active-student');
             });
             btn.classList.add(roleActiveClass[role]);
+            
+            var previousRole = document.getElementById('selectedRoleInput').value;
+            if (fromUserClick && previousRole && previousRole !== role) {
+                document.querySelector('input[name="Username"]').value = '';
+                document.querySelector('input[name="StudentId"]').value = '';
+                document.getElementById('passwordInput').value = '';
+            }
+
             document.getElementById('selectedRoleInput').value = role;
 
             if (role === 'Student') {

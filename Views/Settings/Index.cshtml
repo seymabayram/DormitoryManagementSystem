@@ -130,23 +130,23 @@
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button" role="tab" aria-controls="security" aria-selected="false">
-                        <i class="bi bi-shield-lock-fill"></i> Security
+                        <i class="bi bi-shield-lock-fill"></i> System Security
                     </button>
                 </li>
             }
             
-            @if (isStudent)
+            @if (isStudent || isStaff)
             {
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="myinfo-tab" data-bs-toggle="tab" data-bs-target="#myinfo" type="button" role="tab" aria-controls="myinfo" aria-selected="true">
+                    <button class="nav-link @((isStudent || isStaff) ? "active" : "")" id="myinfo-tab" data-bs-toggle="tab" data-bs-target="#myinfo" type="button" role="tab" aria-controls="myinfo" aria-selected="true">
                         <i class="bi bi-person-lines-fill"></i> My Information
                     </button>
                 </li>
             }
 
             <li class="nav-item" role="presentation">
-                <button class="nav-link @(isStaff ? "active" : "")" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="@(isStaff ? "true" : "false")">
-                    <i class="bi bi-shield-lock"></i> Security
+                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">
+                    <i class="bi bi-key"></i> Change Password
                 </button>
             </li>
         </ul>
@@ -460,10 +460,10 @@
                 </div>
             }
 
-            @if (isStudent)
+            @if (isStudent || isStaff)
             {
-                <!-- Tab 5: Student Info -->
-                <div class="tab-pane fade show active" id="myinfo" role="tabpanel" aria-labelledby="myinfo-tab">
+                <!-- Tab 5: Personal Info -->
+                <div class="tab-pane fade @((isStudent || isStaff) ? "show active" : "")" id="myinfo" role="tabpanel" aria-labelledby="myinfo-tab">
                     <div class="row justify-content-center">
                         <div class="col-md-9">
                             <div class="form-section-title"><i class="bi bi-person-circle"></i> Personal Profile Information</div>
@@ -490,27 +490,30 @@
                                             <input asp-for="StudentInfo.Email" class="form-control bg-light" readonly disabled />
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <label asp-for="StudentInfo.PhoneNumber" class="form-label"></label>
-                                        <div class="input-group">
-                                            <span class="input-group-text"><i class="bi bi-phone"></i></span>
-                                            <input asp-for="StudentInfo.PhoneNumber" class="form-control bg-light" readonly disabled placeholder="+90 5XX XXX XX XX" />
+                                    @if(isStudent)
+                                    {
+                                        <div class="col-md-6">
+                                            <label asp-for="StudentInfo.PhoneNumber" class="form-label"></label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-phone"></i></span>
+                                                <input asp-for="StudentInfo.PhoneNumber" class="form-control bg-light" readonly disabled placeholder="+90 5XX XXX XX XX" />
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Attached Room</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text bg-light"><i class="bi bi-door-closed"></i></span>
-                                            <input value="@Model.StudentInfo.RoomName" class="form-control bg-light" readonly disabled />
+                                        <div class="col-md-6">
+                                            <label class="form-label">Attached Room</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light"><i class="bi bi-door-closed"></i></span>
+                                                <input value="@Model.StudentInfo.RoomName" class="form-control bg-light" readonly disabled />
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Dormitory Registration Number</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text bg-light"><i class="bi bi-card-text"></i></span>
-                                            <input value="@Model.StudentInfo.StudentId" class="form-control bg-light" readonly disabled />
+                                        <div class="col-md-6">
+                                            <label class="form-label">Dormitory Registration Number</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light"><i class="bi bi-card-text"></i></span>
+                                                <input value="@Model.StudentInfo.StudentId" class="form-control bg-light" readonly disabled />
+                                            </div>
                                         </div>
-                                    </div>
+                                    }
                                     
 
                                 </div>
@@ -521,7 +524,7 @@
             }
 
             <!-- Tab 4: Profile Settings (Password) -->
-            <div class="tab-pane fade @(isStaff ? "show active" : "")" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                 <div class="row justify-content-center py-4">
                     <div class="col-md-7">
                         <div class="form-section-title text-center justify-content-center mb-4"><i class="bi bi-shield-lock"></i> Update Your Credentials</div>

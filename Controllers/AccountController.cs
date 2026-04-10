@@ -52,8 +52,15 @@ namespace DormitoryManagementSystem.Controllers
                     .Include(s => s.User)
                     .FirstOrDefaultAsync(s => s.StudentId == model.StudentId);
 
-                if (student?.User != null && student.User.PasswordHash == model.Password && student.User.IsActive)
+                if (student?.User != null && student.User.PasswordHash == model.Password)
+                {
+                    if (!student.User.IsActive)
+                    {
+                        ModelState.AddModelError(string.Empty, "User account is now Inactive.");
+                        return View(model);
+                    }
                     user = student.User;
+                }
             }
             else
             {
@@ -65,12 +72,20 @@ namespace DormitoryManagementSystem.Controllers
                 }
 
                 var lowerUsername = model.Username.ToLower();
-                user = await _context.Users
+                var potentialUser = await _context.Users
                     .Include(u => u.Role)
                     .FirstOrDefaultAsync(u => u.Username.ToLower() == lowerUsername
-                                           && u.PasswordHash == model.Password
-                                           && u.IsActive
                                            && u.Role != null && u.Role.RoleName == model.SelectedRole);
+                
+                if (potentialUser != null && potentialUser.PasswordHash == model.Password)
+                {
+                    if (!potentialUser.IsActive)
+                    {
+                        ModelState.AddModelError(string.Empty, "User account is now Inactive.");
+                        return View(model);
+                    }
+                    user = potentialUser;
+                }
             }
 
             if (user != null)
@@ -91,6 +106,18 @@ namespace DormitoryManagementSystem.Controllers
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity),
                     new AuthenticationProperties { IsPersistent = model.RememberMe });
+
+                // Log Admin and Staff logins to Recent Activity Logs
+                if (user.Role?.RoleName == "Admin" || user.Role?.RoleName == "Staff")
+                {
+                    _context.AuditLogs.Add(new AuditLog
+                    {
+                        UserId = user.Id,
+                        ActionDesc = "Logged into the system",
+                        Timestamp = DateTime.Now
+                    });
+                    await _context.SaveChangesAsync();
+                }
 
                 return RedirectToAction("Dashboard", "Home");
             }
