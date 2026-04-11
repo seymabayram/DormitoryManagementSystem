@@ -141,6 +141,21 @@ namespace DormitoryManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateProfile(SettingsViewModel model)
         {
+            if (model.ProfileSettings == null || 
+                string.IsNullOrWhiteSpace(model.ProfileSettings.CurrentPassword) || 
+                string.IsNullOrWhiteSpace(model.ProfileSettings.NewPassword) || 
+                string.IsNullOrWhiteSpace(model.ProfileSettings.ConfirmPassword))
+            {
+                TempData["Error"] = "Please fill in all required fields.";
+                return Redirect(Url.Action("Index") + "#profile");
+            }
+
+            if (model.ProfileSettings.NewPassword != model.ProfileSettings.ConfirmPassword)
+            {
+                TempData["Error"] = "New passwords do not match. Please ensure both fields are exactly the same.";
+                return Redirect(Url.Action("Index") + "#profile");
+            }
+
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (int.TryParse(userIdStr, out int userId))
             {
@@ -202,6 +217,14 @@ namespace DormitoryManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreatePersonnel(string Name, string Surname, string Email, string Username, string Password, string Role)
         {
+            if (string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(Surname) || 
+                string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Username) || 
+                string.IsNullOrWhiteSpace(Password) || string.IsNullOrWhiteSpace(Role))
+            {
+                TempData["Error"] = "Please fill in all required fields correctly.";
+                return Redirect(Url.Action("Index") + "#addstaff");
+            }
+
             var role = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == Role);
             if (role != null)
             {
