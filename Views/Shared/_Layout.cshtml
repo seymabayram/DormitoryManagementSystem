@@ -713,6 +713,48 @@
             @: }
         }
     </script>
+
+    <!-- Global Delete Confirmation Modal -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+                <div style="background: linear-gradient(135deg, #dc2626, #ef4444); padding: 24px 28px 18px; text-align: center;">
+                    <div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,0.18);display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px;">
+                        <i class="bi bi-exclamation-triangle-fill" style="font-size:1.6rem;color:white;"></i>
+                    </div>
+                    <h5 class="modal-title fw-bold" style="color:white;margin:0;">Confirm Deletion</h5>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <p id="confirmDeleteMessage" style="color:#475569;font-size:0.95rem;font-weight:500;margin-bottom:0;">Are you sure you want to delete this item? This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer border-0 px-4 pb-4 pt-0 d-flex justify-content-center gap-2">
+                    <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg me-1"></i> Cancel
+                    </button>
+                    <button type="button" class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm" id="confirmDeleteBtn">
+                        <i class="bi bi-trash3 me-1"></i> Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global delete confirmation handler
+        let deleteFormToSubmit = null;
+        function confirmDelete(form, message) {
+            deleteFormToSubmit = form;
+            document.getElementById('confirmDeleteMessage').textContent = message || 'Are you sure you want to delete this item? This action cannot be undone.';
+            var modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+            modal.show();
+            return false;
+        }
+        document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+            if (deleteFormToSubmit) {
+                deleteFormToSubmit.submit();
+            }
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

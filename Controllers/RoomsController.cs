@@ -87,6 +87,7 @@ namespace DormitoryManagementSystem.Controllers
             {
                 _context.Add(room);
                 _context.SaveChanges();
+                TempData["Success"] = "New room added successfully.";
                 return RedirectToAction(nameof(Index));
             }
             return View(room);
@@ -116,6 +117,7 @@ namespace DormitoryManagementSystem.Controllers
             {
                 _context.Update(room);
                 _context.SaveChanges();
+                TempData["Success"] = "Room configuration updated.";
                 return RedirectToAction(nameof(Index));
             }
             return View(room);

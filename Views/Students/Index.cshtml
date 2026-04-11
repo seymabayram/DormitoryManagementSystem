@@ -126,7 +126,7 @@
                                     {
                                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn-action btn-edit"><i class="bi bi-pencil"></i></a>
                                         <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;">
-                                            <button type="submit" class="btn-action btn-delete" onclick="return confirm('Delete this student?')">
+                                            <button type="submit" class="btn-action btn-delete" onclick="return confirmDelete(this.form, 'Are you sure you want to permanently delete this student record?')">
                                                 <i class="bi bi-trash3"></i>
                                             </button>
                                         </form>

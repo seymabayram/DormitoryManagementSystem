@@ -69,6 +69,7 @@ namespace DormitoryManagementSystem.Controllers
                 ticket.IsResolved = false;
                 _context.Add(ticket);
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Maintenance request submitted successfully.";
                 return RedirectToAction(nameof(Index));
             }
             ViewBag.Students = _context.Students.ToList();
@@ -85,6 +86,7 @@ namespace DormitoryManagementSystem.Controllers
             {
                 ticket.IsResolved = true;
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Maintenance ticket marked as resolved.";
             }
             return RedirectToAction(nameof(Index));
         }

@@ -207,16 +207,23 @@ namespace DormitoryManagementSystem.Controllers
             return View(student);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [Authorize(Roles = "Staff")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var student = await _context.Students.FindAsync(id);
-            if (student != null)
+            if (student == null) return NotFound();
+
+            try
             {
                 _context.Students.Remove(student);
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Student record deleted successfully.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "An error occurred while deleting the student: " + ex.Message;
             }
             return RedirectToAction(nameof(Index));
         }

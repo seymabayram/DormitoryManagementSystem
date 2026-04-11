@@ -286,7 +286,7 @@ namespace DormitoryManagementSystem.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DownloadBackup()
         {
-            string dbPath = Path.Combine(_env.ContentRootPath, "DormitoryV2.db");
+            string dbPath = Path.Combine(_env.ContentRootPath, "Dormitory.db");
             if (!System.IO.File.Exists(dbPath))
             {
                 TempData["Error"] = "Database file not found.";

@@ -60,6 +60,7 @@ namespace DormitoryManagementSystem.Controllers
             {
                 _context.Add(due);
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Due/Penalty record created successfully.";
                 return RedirectToAction(nameof(Index));
             }
             var students = await _context.Students.AsNoTracking().ToListAsync();
@@ -82,6 +83,7 @@ namespace DormitoryManagementSystem.Controllers
             {
                 due.IsPaid = true;
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Record marked as paid.";
             }
             return RedirectToAction(nameof(Index));
         }
