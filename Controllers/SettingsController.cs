@@ -97,10 +97,11 @@ namespace DormitoryManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateGlobalSettings(SettingsViewModel model)
         {
-            // Clear validation errors from sub-models not relevant to this form
-            ModelState.Remove("ProfileSettings.CurrentPassword");
-            ModelState.Remove("ProfileSettings.NewPassword");
-            ModelState.Remove("ProfileSettings.ConfirmPassword");
+            // Clear all validation errors except those for GlobalSettings
+            foreach (var key in ModelState.Keys.Where(k => !k.StartsWith("GlobalSettings.")).ToList())
+            {
+                ModelState.Remove(key);
+            }
 
             if (!ModelState.IsValid)
             {
